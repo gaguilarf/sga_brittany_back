@@ -40,7 +40,7 @@ async function bootstrap() {
       'API REST para la gestión de leads del sistema de Brittany Group. ' +
       'Permite crear, consultar, actualizar y eliminar leads de potenciales clientes.',
     )
-    .setVersion('1.0')
+    .setVersion('1.1')
     .addTag('Leads', 'Endpoints para la gestión de leads')
     .build();
 
