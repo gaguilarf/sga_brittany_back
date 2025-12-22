@@ -19,29 +19,23 @@ jobs:
         with:
           node-version: 20
       
-      - name: 📦 Install dependencies (including dev dependencies for build)
+      - name: 📦 Install dependencies
         run: npm ci --legacy-peer-deps
       
       - name: 🔨 Build TypeScript to JavaScript
         run: npm run build
       
-      - name: 🧹 Remove dev dependencies (keep only production)
-        run: |
-          rm -rf node_modules
-          npm ci --omit=dev --legacy-peer-deps
-      
-      - name: 📁 Prepare deployment package
+      - name: 📁 Prepare deployment package (without node_modules)
         run: |
           mkdir -p deploy
           cp -r dist deploy/
-          cp -r node_modules deploy/
           cp package.json deploy/
           cp package-lock.json deploy/
           cp .env.production deploy/.env.production
           cp start.sh deploy/
           cp stop.sh deploy/
           cp ecosystem.config.json deploy/
-          echo "✅ Deployment package created"
+          echo "✅ Deployment package created (node_modules will be installed on server)"
           
       - name: 🚀 Upload to server via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -54,29 +48,46 @@ jobs:
           exclude: |
             **/.git*
             **/.git*/**
-            **/node_modules/.cache/**
+            **/node_modules/**
             **/*.md
           dangerous-clean-slate: false
+          timeout: 300000
       
       - name: ✅ Deployment Summary
         run: |
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-          echo "✅ DEPLOYMENT COMPLETED SUCCESSFULLY!"
+          echo "✅ FILES UPLOADED SUCCESSFULLY!"
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
           echo ""
           echo "🌐 API URL: https://sga.brittanygroup.edu.pe/api"
           echo "📚 Swagger: https://sga.brittanygroup.edu.pe/api/docs"
           echo ""
-          echo "⚠️  NEXT STEPS ON THE SERVER:"
+          echo "⚠️  REQUIRED STEPS ON THE SERVER:"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
           echo "1. SSH into your server"
-          echo "2. cd /public_html/api"
-          echo "3. If first deployment:"
+          echo ""
+          echo "2. Navigate to api directory:"
+          echo "   cd /public_html/api"
+          echo ""
+          echo "3. Install dependencies (REQUIRED):"
+          echo "   npm ci --omit=dev --legacy-peer-deps"
+          echo ""
+          echo "4. If first deployment:"
           echo "   - cp .env.production .env"
+          echo "   - nano .env  # Edit with real credentials"
           echo "   - chmod +x start.sh stop.sh"
+          echo "   - npm install -g pm2"
           echo "   - pm2 start ecosystem.config.json"
-          echo "4. If updating:"
+          echo "   - pm2 save"
+          echo ""
+          echo "5. If updating existing deployment:"
           echo "   - pm2 restart brittany-api"
           echo ""
           echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "⚡ Note: node_modules are NOT uploaded via FTP"
+          echo "   They must be installed on the server (step 3)"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
 
 

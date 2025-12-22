@@ -173,11 +173,28 @@ location /api {
    - ✅ Instalará las dependencias
    - ✅ Compilará el código TypeScript
    - ✅ Subirá los archivos vía FTP a `/api/`
+   - ⚠️ **NO sube `node_modules`** (se instalan en el servidor)
 
-4. En el servidor, reinicia PM2:
+4. **En el servidor (REQUERIDO después de cada deployment):**
    ```bash
+   # Conectarse vía SSH
+   ssh tu_usuario@tu_servidor
+   
+   # Ir al directorio de la API
+   cd /public_html/api
+   
+   # Instalar dependencias de producción
+   npm ci --omit=dev --legacy-peer-deps
+   
+   # Reiniciar PM2
    pm2 restart brittany-api
    ```
+
+### ¿Por qué no se suben los node_modules?
+
+- `node_modules` tiene miles de archivos pequeños
+- La transferencia FTP es muy lenta y puede fallar
+- Es más rápido y confiable instalarlos directamente en el servidor
 
 ### Deployment Manual (si es necesario)
 
