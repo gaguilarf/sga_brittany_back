@@ -20,7 +20,7 @@ jobs:
           node-version: 20
       
       - name: 📦 Install dependencies (including dev dependencies for build)
-        run: npm ci
+        run: npm ci --legacy-peer-deps
       
       - name: 🔨 Build TypeScript to JavaScript
         run: npm run build
@@ -28,7 +28,7 @@ jobs:
       - name: 🧹 Remove dev dependencies (keep only production)
         run: |
           rm -rf node_modules
-          npm ci --omit=dev
+          npm ci --omit=dev --legacy-peer-deps
       
       - name: 📁 Prepare deployment package
         run: |
