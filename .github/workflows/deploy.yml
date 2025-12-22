@@ -1,38 +1,49 @@
-name: Deploy Backend to Banahost
+name: Deploy to Production
 
 on:
   push:
     branches:
-      - main
+      - main  # Se ejecuta automáticamente al hacer push a main
+  workflow_dispatch:  # También permite ejecución manual desde GitHub
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     
     steps:
-      - name: Checkout code
+      - name: 📥 Checkout code
         uses: actions/checkout@v4
       
-      - name: Setup Node.js
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
       
-      - name: Install dependencies
-        run: npm ci --omit=dev
+      - name: 📦 Install dependencies (including dev dependencies for build)
+        run: npm ci
       
-      - name: Build NestJS application
+      - name: 🔨 Build TypeScript to JavaScript
         run: npm run build
       
-      - name: Create deployment package
+      - name: 🧹 Remove dev dependencies (keep only production)
+        run: |
+          rm -rf node_modules
+          npm ci --omit=dev
+      
+      - name: 📁 Prepare deployment package
         run: |
           mkdir -p deploy
           cp -r dist deploy/
           cp -r node_modules deploy/
           cp package.json deploy/
           cp package-lock.json deploy/
+          cp .env.production deploy/.env.production
+          cp start.sh deploy/
+          cp stop.sh deploy/
+          cp ecosystem.config.json deploy/
+          echo "✅ Deployment package created"
           
-      - name: Deploy to Banahost via FTP
+      - name: 🚀 Upload to server via FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -44,6 +55,28 @@ jobs:
             **/.git*
             **/.git*/**
             **/node_modules/.cache/**
-            **/test/**
-            **/*.spec.ts
-            **/*.test.ts
+            **/*.md
+          dangerous-clean-slate: false
+      
+      - name: ✅ Deployment Summary
+        run: |
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo "✅ DEPLOYMENT COMPLETED SUCCESSFULLY!"
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          echo ""
+          echo "🌐 API URL: https://sga.brittanygroup.edu.pe/api"
+          echo "📚 Swagger: https://sga.brittanygroup.edu.pe/api/docs"
+          echo ""
+          echo "⚠️  NEXT STEPS ON THE SERVER:"
+          echo "1. SSH into your server"
+          echo "2. cd /public_html/api"
+          echo "3. If first deployment:"
+          echo "   - cp .env.production .env"
+          echo "   - chmod +x start.sh stop.sh"
+          echo "   - pm2 start ecosystem.config.json"
+          echo "4. If updating:"
+          echo "   - pm2 restart brittany-api"
+          echo ""
+          echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+
