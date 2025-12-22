@@ -1,98 +1,259 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Brittany Group - Sistema de Gestión de Leads (Backend)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST desarrollada con NestJS, TypeORM y MySQL para la gestión de leads de Brittany Group.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 🚀 Deployment en Banahost
 
-## Description
+### Configuración Inicial
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+1. **Variables de entorno en GitHub Secrets:**
+   - `FTP_HOST`: Host del servidor FTP de Banahost
+   - `FTP_USER`: Usuario FTP
+   - `FTP_PASS`: Contraseña FTP
 
-## Project setup
+2. **Estructura en el servidor:**
+   ```
+   /public_html/
+   └── api/
+       ├── dist/
+       ├── node_modules/
+       ├── .env
+       ├── package.json
+       └── start.sh
+   ```
 
-```bash
-$ npm install
-```
+### Proceso de Deployment Automático
 
-## Compile and run the project
+El deployment se ejecuta automáticamente al hacer push a la rama `main`:
 
-```bash
-# development
-$ npm run start
+1. ✅ Checkout del código
+2. ✅ Instalación de dependencias de producción
+3. ✅ Build de la aplicación (TypeScript → JavaScript)
+4. ✅ Creación del paquete de deployment
+5. ✅ Subida vía FTP a `/api/`
 
-# watch mode
-$ npm run start:dev
+### Configuración en el Servidor
 
-# production mode
-$ npm run start:prod
-```
+#### 1. Crear archivo `.env` en producción
 
-## Run tests
+Conectarse al servidor vía SSH o panel de control y crear el archivo `.env`:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+cd /public_html/api
+cp .env.production .env
+nano .env  # Editar si es necesario
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+#### 2. Dar permisos de ejecución a los scripts
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+chmod +x start.sh
+chmod +x stop.sh
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+#### 3. Iniciar el servidor
 
-## Resources
+```bash
+./start.sh
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+O usar PM2 (recomendado):
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+npm install -g pm2
+pm2 start dist/main.js --name "brittany-api"
+pm2 save
+pm2 startup
+```
 
-## Support
+### Configuración de Nginx/Apache
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+#### Para Nginx:
 
-## Stay in touch
+```nginx
+location /api {
+    proxy_pass http://localhost:3001;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_cache_bypass $http_upgrade;
+}
+```
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+#### Para Apache (.htaccess):
 
-## License
+```apache
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^api/(.*)$ http://localhost:3001/api/$1 [P,L]
+</IfModule>
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+<IfModule mod_proxy.c>
+    ProxyPreserveHost On
+    ProxyPass /api http://localhost:3001/api
+    ProxyPassReverse /api http://localhost:3001/api
+</IfModule>
+```
+
+## 🛠️ Desarrollo Local
+
+### Requisitos
+
+- Node.js 20+
+- MySQL 8.0+
+- npm o yarn
+
+### Instalación
+
+```bash
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tus credenciales
+
+# Iniciar en modo desarrollo
+npm run start:dev
+```
+
+### Scripts Disponibles
+
+```bash
+npm run start          # Iniciar en modo normal
+npm run start:dev      # Iniciar con hot-reload
+npm run start:prod     # Iniciar en modo producción
+npm run build          # Compilar TypeScript
+npm run test           # Ejecutar tests unitarios
+npm run test:e2e       # Ejecutar tests E2E
+npm run test:cov       # Tests con cobertura
+npm run lint           # Ejecutar linter
+```
+
+## 📚 Documentación API
+
+Una vez desplegado, la documentación Swagger estará disponible en:
+
+- **Desarrollo:** http://localhost:3001/api/docs
+- **Producción:** https://sga.brittanygroup.edu.pe/api/docs
+
+## 🔧 Endpoints
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| POST | `/api/leads` | Crear un nuevo lead |
+| GET | `/api/leads` | Obtener todos los leads |
+| GET | `/api/leads/:id` | Obtener un lead por ID |
+| PATCH | `/api/leads/:id` | Actualizar un lead |
+| DELETE | `/api/leads/:id` | Eliminar un lead |
+
+## 🗄️ Base de Datos
+
+- **Motor:** MySQL 8.0
+- **Host:** 75.102.22.134:3306
+- **Base de datos:** payxiohs_sga_brittany
+
+### Migración de Datos
+
+En producción, `DB_SYNCHRONIZE` debe estar en `false`. Para aplicar cambios en el esquema:
+
+```bash
+# Generar migración
+npm run migration:generate -- -n MigrationName
+
+# Ejecutar migraciones
+npm run migration:run
+
+# Revertir migración
+npm run migration:revert
+```
+
+## 🔐 Seguridad
+
+### Variables de Entorno Sensibles
+
+Nunca subir al repositorio:
+- ✅ `.env` está en `.gitignore`
+- ✅ Usar `.env.example` como plantilla
+- ✅ Configurar secrets en GitHub Actions
+
+### CORS
+
+Configurado para aceptar requests desde:
+- `http://localhost:3000` (desarrollo)
+- `https://sga.brittanygroup.edu.pe` (producción)
+
+Actualizar en `src/main.ts` si es necesario.
+
+## 📊 Monitoreo
+
+### Logs
+
+```bash
+# Ver logs con PM2
+pm2 logs brittany-api
+
+# Ver logs en tiempo real
+pm2 logs brittany-api --lines 100
+```
+
+### Estado del Servidor
+
+```bash
+# Ver estado
+pm2 status
+
+# Reiniciar
+pm2 restart brittany-api
+
+# Detener
+pm2 stop brittany-api
+```
+
+## 🐛 Troubleshooting
+
+### El servidor no inicia
+
+1. Verificar que el puerto 3001 esté disponible:
+   ```bash
+   lsof -i :3001
+   ```
+
+2. Verificar variables de entorno:
+   ```bash
+   cat .env
+   ```
+
+3. Verificar logs:
+   ```bash
+   pm2 logs brittany-api --err
+   ```
+
+### Error de conexión a base de datos
+
+1. Verificar credenciales en `.env`
+2. Verificar que MySQL esté corriendo
+3. Verificar firewall y permisos de red
+
+### Tests fallan
+
+```bash
+# Limpiar y reinstalar
+rm -rf node_modules package-lock.json
+npm install
+
+# Ejecutar tests
+npm test
+```
+
+## 📞 Soporte
+
+Para problemas o preguntas, contactar al equipo de desarrollo.
+
+## 📄 Licencia
+
+Privado - Brittany Group © 2024
