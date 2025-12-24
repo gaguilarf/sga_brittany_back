@@ -16,11 +16,10 @@ export const PRODUCTOS = [
 export const SEDES = [
   "Lima - Miraflores",
   "Lima - Lince",
-  "Arequipa - Bustamante",
-  "Arequipa - Centro",
-  "Arequipa - Cayma",
+  "Arequipa - José Luis Bustamante R.",
+  "Arequipa - San José",
   "Arequipa - Umacollo",
-  "Arequipa - Brittany Kids (JLByR)",
+  "Arequipa - Cayma",
 ] as const;
 
 export const MEDIOS_CONTACTO = [
