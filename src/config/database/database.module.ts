@@ -17,7 +17,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
                 synchronize: configService.get<boolean>('DB_SYNCHRONIZE', false),
                 logging: configService.get<boolean>('DB_LOGGING', false),
                 charset: 'utf8mb4',
-                timezone: 'Z',
+                timezone: '-05:00', // Peru timezone (UTC-5)
             }),
             inject: [ConfigService],
         }),
