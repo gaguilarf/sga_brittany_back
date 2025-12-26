@@ -20,7 +20,7 @@ export const SEDES = [
   "Arequipa - San José",
   "Arequipa - Umacollo",
   "Arequipa - Cayma",
-  "Arequipa - Brittany Kids",
+  "Arequipa - Bustamante Kids",
 ] as const;
 
 export const MEDIOS_CONTACTO = [
