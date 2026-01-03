@@ -1,0 +1,25 @@
+# Comandos útiles para Docker MySQL
+
+# Ver instancia de MySQL
+docker exec -it mysql-dev mysql -u payxiohs_deployer2 -pbrittanyDev512
+
+# Ver bases de datos
+docker exec -it mysql-dev mysql -u payxiohs_deployer2 -pbrittanyDev512 -e "SHOW DATABASES;"
+
+# Ver tablas en la base de datos
+docker exec -it mysql-dev mysql -u payxiohs_deployer2 -pbrittanyDev512 payxiohs_sga2_brittany -e "SHOW TABLES;"
+
+# Iniciar contenedor
+docker-compose up -d
+
+# Detener contenedor
+docker-compose down
+
+# Resetear base de datos (eliminar volúmenes)
+docker-compose down -v
+
+# Ver logs
+docker logs mysql-dev
+
+# Ver estado del contenedor
+docker ps
