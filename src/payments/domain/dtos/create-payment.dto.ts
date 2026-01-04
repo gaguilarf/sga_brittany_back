@@ -31,9 +31,8 @@ export class CreatePaymentDto {
     numeroBoleta?: string;
 
     @ApiProperty({ description: 'Payment date', example: '2024-01-15T10:30:00Z', required: false })
-    @IsDateString()
     @IsOptional()
-    fechaPago?: Date;
+    fechaPago?: string;
 
     @ApiProperty({ description: 'Campus ID', example: 1, required: false })
     @IsInt()
