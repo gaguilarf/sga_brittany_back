@@ -16,7 +16,7 @@ export class PlansTypeOrmEntity {
     name: string;
 
     @Column({ type: 'varchar', length: 100, nullable: true })
-    type: string;
+    service: string;
 
     @Column({ type: 'text', nullable: true })
     description: string;

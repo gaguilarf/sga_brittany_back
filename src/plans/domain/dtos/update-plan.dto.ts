@@ -11,12 +11,12 @@ export class UpdatePlanDto extends PartialType(CreatePlanDto) {
     name?: string;
 
     @ApiProperty({
-        description: 'Plan type',
+        description: 'Plan service',
         example: 'Mensual',
         maxLength: 100,
         required: false,
     })
-    type?: string;
+    service?: string;
 
     @ApiProperty({
         description: 'Plan description',

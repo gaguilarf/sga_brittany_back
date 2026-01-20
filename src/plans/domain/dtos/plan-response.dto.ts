@@ -14,11 +14,11 @@ export class PlanResponseDto {
     name: string;
 
     @ApiProperty({
-        description: 'Plan type',
+        description: 'Plan service',
         example: 'Mensual',
         required: false,
     })
-    type?: string;
+    service?: string;
 
     @ApiProperty({
         description: 'Plan description',

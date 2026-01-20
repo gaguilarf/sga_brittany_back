@@ -13,7 +13,7 @@ export class CreatePlanDto {
     name: string;
 
     @ApiProperty({
-        description: 'Plan type',
+        description: 'Plan service',
         example: 'Mensual',
         maxLength: 100,
         required: false,
@@ -21,7 +21,7 @@ export class CreatePlanDto {
     @IsString()
     @IsOptional()
     @MaxLength(100)
-    type?: string;
+    service?: string;
 
     @ApiProperty({
         description: 'Plan description',
