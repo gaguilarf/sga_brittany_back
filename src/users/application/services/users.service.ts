@@ -22,7 +22,10 @@ export class UsersService {
       });
       return users.map((u) => this.toResponseDto(u));
     } catch (error) {
-      this.logger.error(`Error fetching users: ${error.message}`, error.stack);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error fetching users: ${errorMessage}`, errorStack);
       throw error;
     }
   }

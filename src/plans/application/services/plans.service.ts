@@ -44,7 +44,10 @@ export class PlansService {
 
       return this.toResponseDto(savedPlan);
     } catch (error) {
-      this.logger.error(`Error creating plan: ${error.message}`, error.stack);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error creating plan: ${errorMessage}`, errorStack);
       throw error;
     }
   }
@@ -59,7 +62,10 @@ export class PlansService {
       this.logger.log(`Found ${plans.length} plans`);
       return plans.map((plan) => this.toResponseDto(plan));
     } catch (error) {
-      this.logger.error(`Error fetching plans: ${error.message}`, error.stack);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error fetching plans: ${errorMessage}`, errorStack);
       throw error;
     }
   }
@@ -75,9 +81,12 @@ export class PlansService {
       this.logger.log(`Found ${plans.length} active plans`);
       return plans.map((plan) => this.toResponseDto(plan));
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
       this.logger.error(
-        `Error fetching active plans: ${error.message}`,
-        error.stack,
+        `Error fetching active plans: ${errorMessage}`,
+        errorStack,
       );
       throw error;
     }
@@ -96,9 +105,12 @@ export class PlansService {
 
       return this.toResponseDto(plan);
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
       this.logger.error(
-        `Error fetching plan ${id}: ${error.message}`,
-        error.stack,
+        `Error fetching plan ${id}: ${errorMessage}`,
+        errorStack,
       );
       throw error;
     }
@@ -141,9 +153,12 @@ export class PlansService {
 
       return this.toResponseDto(updatedPlan);
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
       this.logger.error(
-        `Error updating plan ${id}: ${error.message}`,
-        error.stack,
+        `Error updating plan ${id}: ${errorMessage}`,
+        errorStack,
       );
       throw error;
     }
@@ -165,9 +180,12 @@ export class PlansService {
 
       this.logger.log(`Plan removed successfully: ${plan.name} (ID: ${id})`);
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
       this.logger.error(
-        `Error removing plan ${id}: ${error.message}`,
-        error.stack,
+        `Error removing plan ${id}: ${errorMessage}`,
+        errorStack,
       );
       throw error;
     }
@@ -177,7 +195,7 @@ export class PlansService {
     return {
       id: plan.id,
       name: plan.name,
-      type: plan.type,
+      service: plan.service,
       description: plan.description,
       active: plan.active,
       createdAt: plan.createdAt,
