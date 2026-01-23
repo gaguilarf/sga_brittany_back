@@ -21,10 +21,10 @@ export class CreateEnrollmentDto {
   @IsNotEmpty()
   campusId: number;
 
-  @ApiProperty({ description: 'Plan ID', example: 1 })
+  @ApiProperty({ description: 'Plan ID', example: 1, required: false })
   @IsInt()
-  @IsNotEmpty()
-  planId: number;
+  @IsOptional()
+  planId?: number;
 
   @ApiProperty({ description: 'Course ID', example: 1, required: false })
   @IsInt()
@@ -41,6 +41,17 @@ export class CreateEnrollmentDto {
   @IsOptional()
   @MaxLength(100)
   modalidad?: string;
+
+  @ApiProperty({
+    description: 'Schedule',
+    example: 'Lunes-Miércoles-Viernes 08:00-10:00',
+    maxLength: 255,
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(255)
+  horario?: string;
 
   @ApiProperty({ description: 'Group ID', example: 1, required: false })
   @IsInt()

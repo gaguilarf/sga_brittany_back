@@ -23,6 +23,13 @@ export class EnrollmentResponseDto {
   })
   modalidad?: string;
 
+  @ApiProperty({
+    description: 'Schedule',
+    example: 'Lunes-Miércoles-Viernes 08:00-10:00',
+    required: false,
+  })
+  horario?: string;
+
   @ApiProperty({ description: 'Group ID', example: 1, required: false })
   groupId?: number;
 

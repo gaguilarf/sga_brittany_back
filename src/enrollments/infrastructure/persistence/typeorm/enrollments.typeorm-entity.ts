@@ -31,7 +31,7 @@ export class EnrollmentsTypeOrmEntity {
   @Column({ name: 'sede_id', type: 'int' })
   campusId: number;
 
-  @Column({ name: 'plan_id', type: 'int' })
+  @Column({ name: 'plan_id', type: 'int', nullable: true })
   planId: number;
 
   @Column({ name: 'curso_id', type: 'int', nullable: true })
@@ -62,6 +62,9 @@ export class EnrollmentsTypeOrmEntity {
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   modalidad: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  horario: string;
 
   @Column({
     name: 'tipo_inscripcion',
