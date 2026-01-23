@@ -67,14 +67,12 @@ export class PlansController {
   }
 
   @Get('active')
-  @Roles(1, 2, 3, 4) // All roles can view
   @ApiOperation({ summary: 'Get all active plans' })
   @ApiResponse({
     status: 200,
     description: 'List of active plans',
     type: [PlanResponseDto],
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findActive(): Promise<PlanResponseDto[]> {
     return this.plansService.findActive();
   }

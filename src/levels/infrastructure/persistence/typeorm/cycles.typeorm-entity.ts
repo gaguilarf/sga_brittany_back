@@ -8,6 +8,10 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
+import { LevelsTypeOrmEntity } from './levels.typeorm-entity';
+import { GroupsTypeOrmEntity } from '../../../../groups/infrastructure/persistence/typeorm/groups.typeorm-entity';
+import { EnrollmentsTypeOrmEntity } from '../../../../enrollments/infrastructure/persistence/typeorm/enrollments.typeorm-entity';
+import { StudentProgressTypeOrmEntity } from '../../../../students/infrastructure/persistence/typeorm/student-progress.typeorm-entity';
 
 @Entity('ciclos')
 export class CyclesTypeOrmEntity {
@@ -39,16 +43,19 @@ export class CyclesTypeOrmEntity {
   active: boolean;
 
   // Relations
-  @ManyToOne('LevelsTypeOrmEntity', 'cycles')
+  @ManyToOne(() => LevelsTypeOrmEntity, (level) => level.cycles)
   @JoinColumn({ name: 'nivel_id' })
-  level: any;
+  level: LevelsTypeOrmEntity;
 
-  @OneToMany('GroupsTypeOrmEntity', 'cycle')
-  groups: any[];
+  @OneToMany(() => GroupsTypeOrmEntity, (group) => group.cycle)
+  groups: GroupsTypeOrmEntity[];
 
-  @OneToMany('EnrollmentsTypeOrmEntity', 'cycle')
-  enrollments: any[];
+  @OneToMany(
+    () => EnrollmentsTypeOrmEntity,
+    (enrollment) => enrollment.initialCycle,
+  )
+  enrollments: EnrollmentsTypeOrmEntity[];
 
-  @OneToMany('StudentProgressTypeOrmEntity', 'cycle')
-  progressRecords: any[];
+  @OneToMany(() => StudentProgressTypeOrmEntity, (progress) => progress.cycle)
+  progressRecords: StudentProgressTypeOrmEntity[];
 }

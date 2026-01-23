@@ -137,6 +137,7 @@ export class EnrollmentsService {
       studentId: entity.studentId,
       campusId: entity.campusId,
       planId: entity.planId,
+      courseId: entity.courseId,
       modalidad: entity.modalidad,
       groupId: entity.groupId,
       initialLevelId: entity.initialLevelId,

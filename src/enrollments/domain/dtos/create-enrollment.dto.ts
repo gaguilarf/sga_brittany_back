@@ -24,6 +24,11 @@ export class CreateEnrollmentDto {
   @IsNotEmpty()
   planId: number;
 
+  @ApiProperty({ description: 'Course ID', example: 1, required: false })
+  @IsInt()
+  @IsOptional()
+  courseId?: number;
+
   @ApiProperty({
     description: 'Modality',
     example: 'Presencial',

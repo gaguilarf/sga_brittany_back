@@ -8,6 +8,16 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
+import { StudentsTypeOrmEntity } from '../../../../students/infrastructure/persistence/typeorm/students.typeorm-entity';
+import { CampusesTypeOrmEntity } from '../../../../campuses/infrastructure/persistence/typeorm/campuses.typeorm-entity';
+import { PlansTypeOrmEntity } from '../../../../plans/infrastructure/persistence/typeorm/plans.typeorm-entity';
+import { CoursesTypeOrmEntity } from '../../../../levels/infrastructure/persistence/typeorm/courses.typeorm-entity';
+import { UsersTypeOrmEntity } from '../../../../users/infrastructure/persistence/typeorm/users.typeorm-entity';
+import { GroupsTypeOrmEntity } from '../../../../groups/infrastructure/persistence/typeorm/groups.typeorm-entity';
+import { LevelsTypeOrmEntity } from '../../../../levels/infrastructure/persistence/typeorm/levels.typeorm-entity';
+import { CyclesTypeOrmEntity } from '../../../../levels/infrastructure/persistence/typeorm/cycles.typeorm-entity';
+import { PaymentsTypeOrmEntity } from '../../../../payments/infrastructure/persistence/typeorm/payments.typeorm-entity';
+import { StudentProgressTypeOrmEntity } from '../../../../students/infrastructure/persistence/typeorm/student-progress.typeorm-entity';
 
 @Entity('matriculas')
 export class EnrollmentsTypeOrmEntity {
@@ -22,6 +32,9 @@ export class EnrollmentsTypeOrmEntity {
 
   @Column({ name: 'plan_id', type: 'int' })
   planId: number;
+
+  @Column({ name: 'curso_id', type: 'int', nullable: true })
+  courseId: number;
 
   @Column({ name: 'grupo_id', type: 'int', nullable: true })
   groupId: number;
@@ -76,37 +89,44 @@ export class EnrollmentsTypeOrmEntity {
   active: boolean;
 
   // Relations
-  @ManyToOne('StudentsTypeOrmEntity', 'enrollments')
+  @ManyToOne(() => StudentsTypeOrmEntity, (student) => student.enrollments)
   @JoinColumn({ name: 'alumno_id' })
-  student: any;
+  student: StudentsTypeOrmEntity;
 
-  @ManyToOne('CampusesTypeOrmEntity', 'enrollments')
+  @ManyToOne(() => CampusesTypeOrmEntity, (campus) => campus.enrollments)
   @JoinColumn({ name: 'sede_id' })
-  campus: any;
+  campus: CampusesTypeOrmEntity;
 
-  @ManyToOne('PlansTypeOrmEntity', 'enrollments')
+  @ManyToOne(() => PlansTypeOrmEntity, (plan) => plan.enrollments)
   @JoinColumn({ name: 'plan_id' })
-  plan: any;
+  plan: PlansTypeOrmEntity;
 
-  @ManyToOne('UsersTypeOrmEntity', 'enrollmentsAsAdvisor')
+  @ManyToOne(() => CoursesTypeOrmEntity, (course) => course.enrollments)
+  @JoinColumn({ name: 'curso_id' })
+  course: CoursesTypeOrmEntity;
+
+  @ManyToOne(() => UsersTypeOrmEntity, (user) => user.enrollmentsAsAdvisor)
   @JoinColumn({ name: 'asesor_id' })
-  advisor: any;
+  advisor: UsersTypeOrmEntity;
 
-  @ManyToOne('GroupsTypeOrmEntity', 'enrollments')
+  @ManyToOne(() => GroupsTypeOrmEntity, (group) => group.enrollments)
   @JoinColumn({ name: 'grupo_id' })
-  group: any;
+  group: GroupsTypeOrmEntity;
 
-  @ManyToOne('LevelsTypeOrmEntity', 'enrollments')
+  @ManyToOne(() => LevelsTypeOrmEntity, (level) => level.enrollments)
   @JoinColumn({ name: 'nivel_inicial_id' })
-  initialLevel: any;
+  initialLevel: LevelsTypeOrmEntity;
 
-  @ManyToOne('CyclesTypeOrmEntity', 'enrollments')
+  @ManyToOne(() => CyclesTypeOrmEntity, (cycle) => cycle.enrollments)
   @JoinColumn({ name: 'ciclo_inicial_id' })
-  initialCycle: any;
+  initialCycle: CyclesTypeOrmEntity;
 
-  @OneToMany('PaymentsTypeOrmEntity', 'enrollment')
-  payments: any[];
+  @OneToMany(() => PaymentsTypeOrmEntity, (payment) => payment.enrollment)
+  payments: PaymentsTypeOrmEntity[];
 
-  @OneToMany('StudentProgressTypeOrmEntity', 'enrollment')
-  progressRecords: any[];
+  @OneToMany(
+    () => StudentProgressTypeOrmEntity,
+    (progress) => progress.enrollment,
+  )
+  progressRecords: StudentProgressTypeOrmEntity[];
 }

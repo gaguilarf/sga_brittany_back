@@ -13,6 +13,9 @@ export class EnrollmentResponseDto {
   @ApiProperty({ description: 'Plan ID', example: 1 })
   planId: number;
 
+  @ApiProperty({ description: 'Course ID', example: 1, required: false })
+  courseId?: number;
+
   @ApiProperty({
     description: 'Modality',
     example: 'Presencial',

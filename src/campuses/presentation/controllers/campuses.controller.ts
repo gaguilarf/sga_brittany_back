@@ -69,14 +69,12 @@ export class CampusesController {
   }
 
   @Get('active')
-  @Roles(1, 2, 3, 4) // All roles can view
   @ApiOperation({ summary: 'Get all active campuses' })
   @ApiResponse({
     status: 200,
     description: 'List of active campuses',
     type: [CampusResponseDto],
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized' })
   async findActive(): Promise<CampusResponseDto[]> {
     return this.campusesService.findActive();
   }
