@@ -2,6 +2,7 @@ import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { EnrollmentsTypeOrmEntity } from '../../infrastructure/persistence/typeorm/enrollments.typeorm-entity';
+import { StudentProgressTypeOrmEntity } from '../../../students/infrastructure/persistence/typeorm/student-progress.typeorm-entity';
 import { CreateEnrollmentDto } from '../../domain/dtos/create-enrollment.dto';
 import { UpdateEnrollmentDto } from '../../domain/dtos/update-enrollment.dto';
 import { EnrollmentResponseDto } from '../../domain/dtos/enrollment-response.dto';
@@ -17,6 +18,8 @@ export class EnrollmentsService {
   constructor(
     @InjectRepository(EnrollmentsTypeOrmEntity)
     private readonly enrollmentsRepository: Repository<EnrollmentsTypeOrmEntity>,
+    @InjectRepository(StudentProgressTypeOrmEntity)
+    private readonly studentProgressRepository: Repository<StudentProgressTypeOrmEntity>,
     private readonly pricesService: PricesService,
     private readonly debtsService: DebtsService,
     private readonly paymentsService: PaymentsService,
@@ -44,12 +47,17 @@ export class EnrollmentsService {
       let debtToPayId: number | null = null;
 
       if (createEnrollmentDto.enrollmentType === 'PLAN') {
-        // 1. Inscripción (Deuda inicial que se paga primero)
+        const prices = await this.pricesService.getPrice(
+          savedEnrollment.campusId,
+          savedEnrollment.planId,
+        );
+
+        // 1. Inscripción
         const inscDebt = await this.debtsService.createDebt({
           enrollmentId: savedEnrollment.id,
           tipoDeuda: 'INSCRIPCION',
           concepto: 'Pago por Inscripción',
-          monto: 80.0, // Por ahora fijo, podría venir de PricesService
+          monto: prices?.precioInscripcion || 80.0,
           fechaVencimiento: now,
           mesAplicado,
           estado: 'PENDIENTE',
@@ -61,18 +69,13 @@ export class EnrollmentsService {
           enrollmentId: savedEnrollment.id,
           tipoDeuda: 'MATERIALES',
           concepto: 'Materiales Académicos',
-          monto: 0.0, // Por ahora 0, según DTO o PricesService
+          monto: prices?.precioMateriales || 80.0,
           fechaVencimiento: now,
           mesAplicado,
           estado: 'PENDIENTE',
         });
 
         // 3. Primera Mensualidad
-        const prices = await this.pricesService.getPrice(
-          savedEnrollment.campusId,
-          savedEnrollment.planId,
-        );
-
         const firstMonthDueDate = new Date(
           now.getFullYear(),
           now.getMonth(),
@@ -211,17 +214,38 @@ export class EnrollmentsService {
 
   async remove(id: number): Promise<void> {
     try {
-      this.logger.log(`Removing enrollment with ID: ${id}`);
+      this.logger.log(
+        `Removing enrollment with ID: ${id} and all its dependencies`,
+      );
       const enrollment = await this.enrollmentsRepository.findOne({
         where: { id },
+        relations: ['payments', 'debts', 'progressRecords'],
       });
 
       if (!enrollment) {
         throw new NotFoundException(`Enrollment with ID ${id} not found`);
       }
 
+      // 1. Delete progress records
+      if (enrollment.progressRecords?.length > 0) {
+        await this.studentProgressRepository.remove(enrollment.progressRecords);
+      }
+
+      // 2. Delete payments
+      if (enrollment.payments?.length > 0) {
+        await this.enrollmentsRepository.manager.remove(enrollment.payments);
+      }
+
+      // 3. Delete debts
+      if (enrollment.debts?.length > 0) {
+        await this.enrollmentsRepository.manager.remove(enrollment.debts);
+      }
+
+      // 4. Finally delete enrollment
       await this.enrollmentsRepository.remove(enrollment);
-      this.logger.log(`Enrollment removed successfully: ID ${id}`);
+      this.logger.log(
+        `Enrollment and dependencies removed successfully: ID ${id}`,
+      );
     } catch (error) {
       this.logger.error(
         `Error removing enrollment ${id}: ${error.message}`,

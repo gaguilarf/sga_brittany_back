@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, In } from 'typeorm';
 import { DebtTypeOrmEntity } from '../../infrastructure/persistence/typeorm/debts.typeorm-entity';
 
 @Injectable()
@@ -23,7 +23,7 @@ export class DebtsService {
     return await this.debtRepository.find({
       where: {
         enrollmentId,
-        estado: 'PENDIENTE',
+        estado: In(['PENDIENTE', 'PAGADO_PARCIAL', 'VENCIDO']),
         active: true,
       },
     });
@@ -53,5 +53,11 @@ export class DebtsService {
     }
 
     return await this.debtRepository.save(debt);
+  }
+
+  async remove(id: number): Promise<void> {
+    const debt = await this.debtRepository.findOne({ where: { id } });
+    if (!debt) throw new Error('Deuda no encontrada');
+    await this.debtRepository.remove(debt);
   }
 }

@@ -2,10 +2,13 @@ import {
   Controller,
   Get,
   Post,
+  Delete,
   Body,
   Param,
   UseGuards,
   ParseIntPipe,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -67,6 +70,15 @@ export class DebtsController {
     const debt = await this.debtsService.findOne(id);
     if (!debt) throw new Error('Deuda no encontrada');
     return this.toResponseDto(debt);
+  }
+
+  @Delete(':id')
+  @Roles(1) // Solo Administrador
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete a debt by ID' })
+  @ApiParam({ name: 'id', type: Number })
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.debtsService.remove(id);
   }
 
   private toResponseDto(entity: any): DebtResponseDto {

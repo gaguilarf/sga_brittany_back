@@ -25,15 +25,45 @@ export class PaymentsService {
         `Creating new payment for enrollment ID: ${createPaymentDto.enrollmentId}`,
       );
       const payment = this.paymentsRepository.create(createPaymentDto);
-      const savedPayment = await this.paymentsRepository.save(payment);
 
       // Si el pago está vinculado a una deuda, actualizar el estado de la deuda
-      if (createPaymentDto.debtId) {
+      let debtId = createPaymentDto.debtId;
+
+      // Si no viene debtId, intentamos buscar una deuda pendiente de este tipo para esta matrícula
+      if (!debtId && createPaymentDto.enrollmentId) {
+        const pendingDebts =
+          await this.debtsService.getPendingDebtsByEnrollment(
+            createPaymentDto.enrollmentId,
+          );
+        const tipoMapeado: Record<string, string> = {
+          Inscripción: 'INSCRIPCION',
+          Inscripcion: 'INSCRIPCION',
+          Materiales: 'MATERIALES',
+          Mensualidad: 'MENSUALIDAD',
+        };
+
+        const targetTipo = tipoMapeado[createPaymentDto.tipo || ''] || null;
+
+        if (targetTipo) {
+          const matchingDebt = pendingDebts.find(
+            (d) => d.tipoDeuda === targetTipo,
+          );
+          if (matchingDebt) {
+            debtId = matchingDebt.id;
+          }
+        }
+      }
+
+      if (debtId) {
         await this.debtsService.updateDebtStatus(
-          createPaymentDto.debtId,
+          debtId,
           createPaymentDto.monto,
         );
+        // Actualizar el entity del pago con el debtId asignado
+        (payment as any).debtId = debtId;
       }
+
+      const savedPayment = await this.paymentsRepository.save(payment);
 
       this.logger.log(
         `Payment created successfully with ID: ${savedPayment.id}`,
