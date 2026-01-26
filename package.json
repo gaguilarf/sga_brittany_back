@@ -14,7 +14,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "deploy:build": "npm ci --omit=dev && npm run build",
     "deploy:package": "node scripts/package-deploy.js",
-    "seed:roles": "ts-node scripts/seed-roles.ts"
+    "seed:roles": "ts-node scripts/seed-roles.ts",
+    "seed:prices": "ts-node scripts/seed-prices.ts"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",

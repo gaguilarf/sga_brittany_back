@@ -32,43 +32,54 @@ El proyecto está diseñado siguiendo los principios de arquitectura limpia, sep
 Sigue estos pasos para poner en marcha el proyecto en un entorno local:
 
 ### 1. Levantar Servicios con Docker
+
 El proyecto utiliza un contenedor para la base de datos MySQL. Asegúrate de tener Docker instalado.
 
 ```bash
 docker-compose up -d
 ```
+
 Esto levantará una base de datos MySQL 8.0 en el puerto configurado (por defecto `3306`).
 
 ### 2. Configuración de Base de Datos
-Una vez que el contenedor esté corriendo, la base de datos se conectará automáticamente. 
+
+Una vez que el contenedor esté corriendo, la base de datos se conectará automáticamente.
 
 > [!NOTE]
 > En desarrollo, el sistema está configurado para sincronizar automáticamente el esquema de la base de datos (`DB_SYNCHRONIZE=true`).
 
 ### 3. Variables de Entorno
+
 Crea un archivo `.env` en la raíz del proyecto basándote en el archivo de ejemplo:
 
 ```bash
 cp .env.example .env
 ```
+
 Asegúrate de configurar correctamente las credenciales de la base de datos y el `JWT_SECRET`.
 
 ### 4. Instalación de Dependencias
+
 Instala los paquetes necesarios de Node.js:
 
 ```bash
 npm install
 ```
 
-### 5. Sembrar Datos Iniciales (Roles)
-Es fundamental crear los roles predeterminados para que el sistema de permisos funcione correctamente.
+### 5. Sembrar Datos Iniciales (Roles y Precios)
+
+Es fundamental crear los roles predeterminados para que el sistema de permisos funcione correctamente, y opcionalmente configurar los precios por defecto.
 
 ```bash
+# Seteo de Roles (Administrador, Docente, Desarrollador, Secretaria)
 npm run seed:roles
+
+# Seteo de Precios por defecto (Planes Standard, Premium, Plus, Convenio en todas las Sedes)
+npm run seed:prices
 ```
-Esto creará los roles: **Administrador**, **Docente**, **Desarrollador** y **Secretaria**.
 
 ### 6. Ejecutar el Proyecto
+
 Finalmente, inicia el servidor en modo desarrollo con recarga automática:
 
 ```bash
@@ -107,8 +118,10 @@ Aquí podrás probar todos los endpoints, ver los esquemas de los DTOs y verific
 - `npm run lint`: Ejecuta el linter de código.
 - `npm run test`: Ejecuta las pruebas unitarias.
 - `npm run seed:roles`: Puebla la base de datos con los roles iniciales.
+- `npm run seed:prices`: Puebla la base de datos con los planes (13-16) y sus precios por defecto para todas las sedes.
 
 ---
 
 ## 📄 Licencia
+
 Privado - Brittany Group © 2026

@@ -66,19 +66,23 @@ export class PricesService {
 
   private getDefaultPrice(planId: number, campusId: number): any {
     // Lógica por defecto solicitada:
-    // Plan Standard – S/. 280
-    // Plan Premium – S/. 329
-    // Plan Plus – S/. 299
-    // Convenio – S/. 245
+    // 13. Plan Standard – S/. 280
+    // 14. Plan Premium – S/. 329
+    // 15. Plan Plus – S/. 299
+    // 16. Convenio – S/. 245
+    // Materiales: S/. 80, Inscripción: S/. 80
 
-    let precioMensualidad = 0;
+    let precioMensualidad = 280.0; // Default Standard
 
-    // Asumimos IDs basados en nombres comunes o simplemente mapeamos nombres si tuviéramos acceso a ellos
-    // Por ahora, devolvemos un objeto parcial compatible
+    if (planId === 13) precioMensualidad = 280.0;
+    else if (planId === 14) precioMensualidad = 329.0;
+    else if (planId === 15) precioMensualidad = 299.0;
+    else if (planId === 16) precioMensualidad = 245.0;
+
     return {
-      precioMensualidad: 280.0, // Valor base
+      precioMensualidad,
       precioInscripcion: 80.0,
-      precioMateriales: 0.0,
+      precioMateriales: 80.0,
     };
   }
 }
