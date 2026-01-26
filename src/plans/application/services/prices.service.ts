@@ -10,6 +10,36 @@ export class PricesService {
     private readonly priceRepository: Repository<PriceSedePlanTypeOrmEntity>,
   ) {}
 
+  async findAll(): Promise<PriceSedePlanTypeOrmEntity[]> {
+    return await this.priceRepository.find({
+      relations: ['campus', 'plan'],
+    });
+  }
+
+  async findByCampus(campusId: number): Promise<PriceSedePlanTypeOrmEntity[]> {
+    return await this.priceRepository.find({
+      where: { campusId, active: true },
+      relations: ['plan'],
+    });
+  }
+
+  async create(
+    data: Partial<PriceSedePlanTypeOrmEntity>,
+  ): Promise<PriceSedePlanTypeOrmEntity> {
+    const price = this.priceRepository.create(data);
+    return await this.priceRepository.save(price);
+  }
+
+  async update(
+    id: number,
+    data: Partial<PriceSedePlanTypeOrmEntity>,
+  ): Promise<PriceSedePlanTypeOrmEntity> {
+    await this.priceRepository.update(id, data);
+    return (await this.priceRepository.findOne({
+      where: { id },
+    })) as PriceSedePlanTypeOrmEntity;
+  }
+
   async getPrice(
     campusId: number,
     planId: number,

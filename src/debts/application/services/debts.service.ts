@@ -29,6 +29,12 @@ export class DebtsService {
     });
   }
 
+  async findOne(id: number): Promise<DebtTypeOrmEntity | null> {
+    return await this.debtRepository.findOne({
+      where: { id, active: true },
+    });
+  }
+
   async updateDebtStatus(
     debtId: number,
     montoPagado: number,

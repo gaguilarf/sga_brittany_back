@@ -23,6 +23,7 @@ import { PlansService } from '../../application/services/plans.service';
 import { CreatePlanDto } from '../../domain/dtos/create-plan.dto';
 import { UpdatePlanDto } from '../../domain/dtos/update-plan.dto';
 import { PlanResponseDto } from '../../domain/dtos/plan-response.dto';
+import { PricesService } from '../../application/services/prices.service';
 import { JwtAuthGuard } from '../../../authentication/infrastructure/guards/jwt-auth.guard';
 import { RolesGuard } from '../../../authentication/infrastructure/guards/roles.guard';
 import { Roles } from '../../../authentication/infrastructure/decorators/roles.decorator';
@@ -33,7 +34,10 @@ import { Roles } from '../../../authentication/infrastructure/decorators/roles.d
 @ApiBearerAuth()
 @ApiCookieAuth()
 export class PlansController {
-  constructor(private readonly plansService: PlansService) {}
+  constructor(
+    private readonly plansService: PlansService,
+    private readonly pricesService: PricesService,
+  ) {}
 
   @Post()
   @Roles(1, 4) // Administrador, Secretaria
@@ -134,5 +138,35 @@ export class PlansController {
   @ApiResponse({ status: 404, description: 'Plan not found' })
   async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.plansService.remove(id);
+  }
+
+  // --- ENDPOINTS PARA PRECIOS POR SEDE ---
+
+  @Get('prices/all')
+  @Roles(1, 4)
+  @ApiOperation({ summary: 'Get all configured prices' })
+  async findAllPrices() {
+    return this.pricesService.findAll();
+  }
+
+  @Get('prices/campus/:campusId')
+  @Roles(1, 4)
+  @ApiOperation({ summary: 'Get prices for a specific campus' })
+  async findPricesByCampus(@Param('campusId', ParseIntPipe) campusId: number) {
+    return this.pricesService.findByCampus(campusId);
+  }
+
+  @Post('prices')
+  @Roles(1)
+  @ApiOperation({ summary: 'Create/Configure a price for a campus/plan' })
+  async createPrice(@Body() data: any) {
+    return this.pricesService.create(data);
+  }
+
+  @Patch('prices/:id')
+  @Roles(1)
+  @ApiOperation({ summary: 'Update a configured price' })
+  async updatePrice(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+    return this.pricesService.update(id, data);
   }
 }
