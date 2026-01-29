@@ -121,6 +121,18 @@ export class StudentsController {
     return this.studentsService.update(id, updateStudentDto);
   }
 
+  @Delete('all')
+  @Roles(1) // Only Administrador
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete all students' })
+  @ApiResponse({
+    status: 204,
+    description: 'All students deleted successfully',
+  })
+  async removeAll(): Promise<void> {
+    return this.studentsService.removeAll();
+  }
+
   @Delete(':id')
   @Roles(1) // Only Administrador
   @HttpCode(HttpStatus.NO_CONTENT)

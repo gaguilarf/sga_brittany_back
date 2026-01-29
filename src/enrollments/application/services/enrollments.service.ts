@@ -212,6 +212,30 @@ export class EnrollmentsService {
     }
   }
 
+  async removeAll(): Promise<void> {
+    try {
+      this.logger.log('Removing all enrollments and their dependencies');
+
+      // Since we have cascade delete on database level for payments and debts,
+      // and on ORM level for progress records via relations cascade or manual deletion if needed.
+      // However, to be safe and ensure triggers/subscribers run if any, or just to follow the pattern:
+
+      // Note: delete({}) triggers typeorm delete, which might bypassing some hooks if not careful,
+      // but with database cascade constraints it's the most efficient.
+      // Given we set onDelete: 'CASCADE' in the entity, a simple delete should work.
+
+      await this.enrollmentsRepository.delete({});
+
+      this.logger.log('All enrollments removed successfully');
+    } catch (error) {
+      this.logger.error(
+        `Error removing all enrollments: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
+
   async remove(id: number): Promise<void> {
     try {
       this.logger.log(

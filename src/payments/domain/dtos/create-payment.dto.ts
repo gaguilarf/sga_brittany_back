@@ -67,4 +67,20 @@ export class CreatePaymentDto {
   @IsInt()
   @IsOptional()
   debtId?: number;
+
+  @ApiProperty({
+    description: 'Indicador de pago adelantado',
+    example: false,
+    required: false,
+  })
+  @IsOptional()
+  esAdelantado?: boolean;
+
+  @ApiProperty({
+    description: 'Detalle de meses adelantados',
+    example: [{ mes: '2024-03', monto: 329.0 }],
+    required: false,
+  })
+  @IsOptional()
+  mesesAdelantados?: { mes: string; monto: number }[];
 }

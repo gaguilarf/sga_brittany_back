@@ -112,6 +112,18 @@ export class EnrollmentsController {
     return this.enrollmentsService.update(id, updateEnrollmentDto);
   }
 
+  @Delete('all')
+  @Roles(1) // Only Administrador
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete all enrollments' })
+  @ApiResponse({
+    status: 204,
+    description: 'All enrollments deleted successfully',
+  })
+  async removeAll(): Promise<void> {
+    return this.enrollmentsService.removeAll();
+  }
+
   @Delete(':id')
   @Roles(1) // Only Administrador
   @HttpCode(HttpStatus.NO_CONTENT)

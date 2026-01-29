@@ -159,6 +159,20 @@ export class StudentsService {
     }
   }
 
+  async removeAll(): Promise<void> {
+    try {
+      this.logger.log('Removing all students');
+      await this.studentsRepository.delete({});
+      this.logger.log('All students removed successfully');
+    } catch (error) {
+      this.logger.error(
+        `Error removing all students: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
+
   async remove(id: number): Promise<void> {
     try {
       this.logger.log(`Removing student with ID: ${id}`);

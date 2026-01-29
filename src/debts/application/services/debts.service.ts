@@ -60,4 +60,19 @@ export class DebtsService {
     if (!debt) throw new Error('Deuda no encontrada');
     await this.debtRepository.remove(debt);
   }
+
+  async findDebtByEnrollmentAndMonth(
+    enrollmentId: number,
+    month: string, // Format: "YYYY-MM"
+  ): Promise<DebtTypeOrmEntity | null> {
+    return await this.debtRepository.findOne({
+      where: {
+        enrollmentId,
+        tipoDeuda: 'MENSUALIDAD',
+        mesAplicado: month,
+        estado: In(['PENDIENTE', 'PAGADO_PARCIAL', 'VENCIDO']),
+        active: true,
+      },
+    });
+  }
 }

@@ -153,15 +153,22 @@ export class EnrollmentsTypeOrmEntity {
   @JoinColumn({ name: 'product_id' })
   product: ProductsTypeOrmEntity;
 
-  @OneToMany(() => PaymentsTypeOrmEntity, (payment) => payment.enrollment)
+  @OneToMany(() => PaymentsTypeOrmEntity, (payment) => payment.enrollment, {
+    onDelete: 'CASCADE',
+  })
   payments: PaymentsTypeOrmEntity[];
 
-  @OneToMany(() => DebtTypeOrmEntity, (debt) => debt.enrollment)
+  @OneToMany(() => DebtTypeOrmEntity, (debt) => debt.enrollment, {
+    onDelete: 'CASCADE',
+  })
   debts: DebtTypeOrmEntity[];
 
   @OneToMany(
     () => StudentProgressTypeOrmEntity,
     (progress) => progress.enrollment,
+    {
+      onDelete: 'CASCADE',
+    },
   )
   progressRecords: StudentProgressTypeOrmEntity[];
 }

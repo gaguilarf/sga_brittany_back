@@ -49,6 +49,9 @@ export class PaymentsTypeOrmEntity {
   @Column({ name: 'deuda_id', type: 'int', nullable: true })
   debtId: number;
 
+  @Column({ name: 'es_adelantado', type: 'boolean', default: false })
+  esAdelantado: boolean;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 

@@ -92,6 +92,18 @@ export class PaymentsController {
     return this.paymentsService.update(id, updatePaymentDto);
   }
 
+  @Get(':id/prepayment-details')
+  @Roles(1, 2, 3, 4) // All roles
+  @ApiOperation({ summary: 'Get prepayment details by payment ID' })
+  @ApiParam({ name: 'id', description: 'Payment ID', type: Number })
+  @ApiResponse({
+    status: 200,
+    description: 'Prepayment details found',
+  })
+  async getPrepaymentDetails(@Param('id', ParseIntPipe) id: number) {
+    return this.paymentsService.getPrepaymentDetails(id);
+  }
+
   @Delete(':id')
   @Roles(1) // Only Administrador
   @HttpCode(HttpStatus.NO_CONTENT)

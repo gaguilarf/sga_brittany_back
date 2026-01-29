@@ -64,7 +64,7 @@ export class StudentsTypeOrmEntity {
   active: boolean;
 
   // Relations
-  @OneToMany('EnrollmentsTypeOrmEntity', 'student')
+  @OneToMany('EnrollmentsTypeOrmEntity', 'student', { onDelete: 'CASCADE' })
   enrollments: any[];
 
   @OneToMany('GradesTypeOrmEntity', 'student')

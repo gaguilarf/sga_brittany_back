@@ -1,7 +1,13 @@
-import { Injectable, NotFoundException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  Logger,
+  BadRequestException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PaymentsTypeOrmEntity } from '../../infrastructure/persistence/typeorm/payments.typeorm-entity';
+import { PagoAdelantadoDetalleTypeOrmEntity } from '../../infrastructure/persistence/typeorm/pago-adelantado-detalle.typeorm-entity';
 import { CreatePaymentDto } from '../../domain/dtos/create-payment.dto';
 import { UpdatePaymentDto } from '../../domain/dtos/update-payment.dto';
 import { PaymentResponseDto } from '../../domain/dtos/payment-response.dto';
@@ -14,6 +20,8 @@ export class PaymentsService {
   constructor(
     @InjectRepository(PaymentsTypeOrmEntity)
     private readonly paymentsRepository: Repository<PaymentsTypeOrmEntity>,
+    @InjectRepository(PagoAdelantadoDetalleTypeOrmEntity)
+    private readonly pagoAdelantadoDetalleRepository: Repository<PagoAdelantadoDetalleTypeOrmEntity>,
     private readonly debtsService: DebtsService,
   ) {}
 
@@ -24,13 +32,48 @@ export class PaymentsService {
       this.logger.log(
         `Creating new payment for enrollment ID: ${createPaymentDto.enrollmentId}`,
       );
-      const payment = this.paymentsRepository.create(createPaymentDto);
+      const paymentData = { ...createPaymentDto };
+      delete (paymentData as any).mesesAdelantados;
+
+      // Business Rule: Exclusivity between Mensualidad and Pago Adelantado
+      if (
+        createPaymentDto.tipo === 'Mensualidad' ||
+        createPaymentDto.esAdelantado
+      ) {
+        const existingPayments = await this.paymentsRepository.find({
+          where: { enrollmentId: createPaymentDto.enrollmentId },
+        });
+
+        if (
+          createPaymentDto.tipo === 'Mensualidad' &&
+          existingPayments.some((p) => p.tipo === 'Mensualidad Adelantada')
+        ) {
+          throw new BadRequestException(
+            'No se puede registrar una mensualidad si ya existe una mensualidad adelantada para esta matrícula.',
+          );
+        }
+
+        if (
+          createPaymentDto.esAdelantado &&
+          existingPayments.some((p) => p.tipo === 'Mensualidad')
+        ) {
+          throw new BadRequestException(
+            'No se puede registrar una mensualidad adelantada si ya existe una mensualidad para esta matrícula.',
+          );
+        }
+      }
+
+      const payment = this.paymentsRepository.create(paymentData);
 
       // Si el pago está vinculado a una deuda, actualizar el estado de la deuda
       let debtId = createPaymentDto.debtId;
 
-      // Si no viene debtId, intentamos buscar una deuda pendiente de este tipo para esta matrícula
-      if (!debtId && createPaymentDto.enrollmentId) {
+      // Si no viene debtId y no es pago adelantado, intentamos buscar una deuda pendiente
+      if (
+        !debtId &&
+        createPaymentDto.enrollmentId &&
+        !createPaymentDto.esAdelantado
+      ) {
         const pendingDebts =
           await this.debtsService.getPendingDebtsByEnrollment(
             createPaymentDto.enrollmentId,
@@ -40,6 +83,7 @@ export class PaymentsService {
           Inscripcion: 'INSCRIPCION',
           Materiales: 'MATERIALES',
           Mensualidad: 'MENSUALIDAD',
+          'Mensualidad Adelantada': 'MENSUALIDAD',
         };
 
         const targetTipo = tipoMapeado[createPaymentDto.tipo || ''] || null;
@@ -65,6 +109,55 @@ export class PaymentsService {
 
       const savedPayment = await this.paymentsRepository.save(payment);
 
+      // Si es un pago adelantado, guardar el detalle por mes
+      if (createPaymentDto.esAdelantado && createPaymentDto.mesesAdelantados) {
+        this.logger.log(
+          `Saving prepayment details for payment ID: ${savedPayment.id}`,
+        );
+        for (const detail of createPaymentDto.mesesAdelantados) {
+          const savedDetail = await this.pagoAdelantadoDetalleRepository.save({
+            pagoId: savedPayment.id,
+            enrollmentId: savedPayment.enrollmentId,
+            mesAdelantado: detail.mes,
+            montoAsignado: detail.monto,
+            estado: 'PENDIENTE_APLICACION',
+          });
+
+          // Buscar deuda correspondiente al mes adelantado
+          const matchingDebt =
+            await this.debtsService.findDebtByEnrollmentAndMonth(
+              savedPayment.enrollmentId,
+              detail.mes,
+            );
+
+          if (matchingDebt) {
+            this.logger.log(
+              `Found matching debt ID: ${matchingDebt.id} for month: ${detail.mes}`,
+            );
+
+            // Aplicar el pago adelantado a la deuda
+            await this.debtsService.updateDebtStatus(
+              matchingDebt.id,
+              detail.monto,
+            );
+
+            // Actualizar el estado del detalle de pago adelantado
+            await this.pagoAdelantadoDetalleRepository.update(savedDetail.id, {
+              estado: 'APLICADO',
+              deudaGeneradaId: matchingDebt.id,
+            });
+
+            this.logger.log(
+              `Applied prepayment to debt ID: ${matchingDebt.id}, amount: ${detail.monto}`,
+            );
+          } else {
+            this.logger.log(
+              `No matching debt found for month: ${detail.mes}. Prepayment will remain as PENDIENTE_APLICACION.`,
+            );
+          }
+        }
+      }
+
       this.logger.log(
         `Payment created successfully with ID: ${savedPayment.id}`,
       );
@@ -88,6 +181,29 @@ export class PaymentsService {
     } catch (error) {
       this.logger.error(
         `Error fetching payments: ${error.message}`,
+        error.stack,
+      );
+      throw error;
+    }
+  }
+
+  async getPrepaymentDetails(paymentId: number) {
+    try {
+      this.logger.log(
+        `Fetching prepayment details for payment ID: ${paymentId}`,
+      );
+      const details = await this.pagoAdelantadoDetalleRepository.find({
+        where: { pagoId: paymentId },
+        order: { mesAdelantado: 'ASC' },
+      });
+      return details.map((d) => ({
+        mes: d.mesAdelantado,
+        monto: d.montoAsignado,
+        estado: d.estado,
+      }));
+    } catch (error) {
+      this.logger.error(
+        `Error fetching prepayment details: ${error.message}`,
         error.stack,
       );
       throw error;

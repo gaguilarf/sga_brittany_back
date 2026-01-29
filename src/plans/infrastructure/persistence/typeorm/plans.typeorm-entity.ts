@@ -23,6 +23,9 @@ export class PlansTypeOrmEntity {
   @Column({ type: 'text', nullable: true })
   description: string;
 
+  @Column({ name: 'duracion_meses', type: 'int', default: 12 })
+  duracionMeses: number;
+
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
