@@ -10,6 +10,7 @@ import { EnrollmentResponseDto } from '../../domain/dtos/enrollment-response.dto
 import { PricesService } from '../../../plans/application/services/prices.service';
 import { DebtsService } from '../../../debts/application/services/debts.service';
 import { PaymentsService } from '../../../payments/application/services/payments.service';
+import { PagoAdelantadoDetalleTypeOrmEntity } from '../../../payments/infrastructure/persistence/typeorm/pago-adelantado-detalle.typeorm-entity';
 
 @Injectable()
 export class EnrollmentsService {
@@ -250,23 +251,44 @@ export class EnrollmentsService {
         throw new NotFoundException(`Enrollment with ID ${id} not found`);
       }
 
-      // 1. Delete progress records
-      if (enrollment.progressRecords?.length > 0) {
-        await this.studentProgressRepository.remove(enrollment.progressRecords);
-      }
+      // Perform deletion in strict order to avoid FK constraints
+      // Order: PagoAdelantadoDetalle -> Payments -> Debts -> StudentProgress -> Enrollment
 
-      // 2. Delete payments
+      // 0. Delete PagoAdelantadoDetalle (references Payments and Enrollments)
+      // Must be deleted before Payments to avoid FK constraint fails on 'pago_id'
+      this.logger.log('Checking for PagoAdelantadoDetalle records...');
+      const pagoAdelantadoRepo =
+        this.enrollmentsRepository.manager.getRepository(
+          PagoAdelantadoDetalleTypeOrmEntity,
+        );
+      // We delete by enrollmentId directly
+      await pagoAdelantadoRepo.delete({ enrollmentId: id });
+
+      // 1. Delete Payments (referencing Debts and Enrollments)
       if (enrollment.payments?.length > 0) {
+        this.logger.log(`Deleting ${enrollment.payments.length} payments...`);
+        // Use manager to remove entities directly
         await this.enrollmentsRepository.manager.remove(enrollment.payments);
       }
 
-      // 3. Delete debts
+      // 2. Delete Debts (referencing Enrollments)
       if (enrollment.debts?.length > 0) {
+        this.logger.log(`Deleting ${enrollment.debts.length} debts...`);
+        // Use manager to remove entities directly
         await this.enrollmentsRepository.manager.remove(enrollment.debts);
       }
 
-      // 4. Finally delete enrollment
+      // 3. Delete Student Progress (referencing Enrollments)
+      if (enrollment.progressRecords?.length > 0) {
+        this.logger.log(
+          `Deleting ${enrollment.progressRecords.length} progress records...`,
+        );
+        await this.studentProgressRepository.remove(enrollment.progressRecords);
+      }
+
+      // 4. Finally delete the Enrollment
       await this.enrollmentsRepository.remove(enrollment);
+
       this.logger.log(
         `Enrollment and dependencies removed successfully: ID ${id}`,
       );
