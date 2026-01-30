@@ -12,6 +12,7 @@ import { CreatePaymentDto } from '../../domain/dtos/create-payment.dto';
 import { UpdatePaymentDto } from '../../domain/dtos/update-payment.dto';
 import { PaymentResponseDto } from '../../domain/dtos/payment-response.dto';
 import { DebtsService } from '../../../debts/application/services/debts.service';
+import { EnrollmentsTypeOrmEntity } from '../../../enrollments/infrastructure/persistence/typeorm/enrollments.typeorm-entity';
 
 @Injectable()
 export class PaymentsService {
@@ -22,6 +23,8 @@ export class PaymentsService {
     private readonly paymentsRepository: Repository<PaymentsTypeOrmEntity>,
     @InjectRepository(PagoAdelantadoDetalleTypeOrmEntity)
     private readonly pagoAdelantadoDetalleRepository: Repository<PagoAdelantadoDetalleTypeOrmEntity>,
+    @InjectRepository(EnrollmentsTypeOrmEntity)
+    private readonly enrollmentsRepository: Repository<EnrollmentsTypeOrmEntity>,
     private readonly debtsService: DebtsService,
   ) {}
 
@@ -111,6 +114,21 @@ export class PaymentsService {
 
       // Si es un pago adelantado, guardar el detalle por mes
       if (createPaymentDto.esAdelantado && createPaymentDto.mesesAdelantados) {
+        // Validar que la matrícula sea de tipo PLAN y esté activa
+        const enrollment = await this.enrollmentsRepository.findOne({
+          where: { id: createPaymentDto.enrollmentId },
+        });
+
+        if (
+          !enrollment ||
+          !enrollment.active ||
+          enrollment.enrollmentType !== 'PLAN'
+        ) {
+          throw new BadRequestException(
+            'Solo se pueden registrar mensualidades adelantadas para matrículas académicas activas.',
+          );
+        }
+
         this.logger.log(
           `Saving prepayment details for payment ID: ${savedPayment.id}`,
         );
@@ -130,31 +148,38 @@ export class PaymentsService {
               detail.mes,
             );
 
-          if (matchingDebt) {
-            this.logger.log(
-              `Found matching debt ID: ${matchingDebt.id} for month: ${detail.mes}`,
-            );
+          let debtToApplyId = matchingDebt?.id;
 
-            // Aplicar el pago adelantado a la deuda
-            await this.debtsService.updateDebtStatus(
-              matchingDebt.id,
-              detail.monto,
-            );
-
-            // Actualizar el estado del detalle de pago adelantado
-            await this.pagoAdelantadoDetalleRepository.update(savedDetail.id, {
-              estado: 'APLICADO',
-              deudaGeneradaId: matchingDebt.id,
+          if (!debtToApplyId) {
+            this.logger.log(`Creating new debt for month: ${detail.mes}`);
+            const newDebt = await this.debtsService.createDebt({
+              enrollmentId: savedPayment.enrollmentId,
+              tipoDeuda: 'MENSUALIDAD',
+              concepto: `Mensualidad Adelantada`,
+              monto: detail.monto,
+              fechaVencimiento: new Date(`${detail.mes}-01`), // Primer día del mes
+              mesAplicado: detail.mes,
+              estado: 'PENDIENTE',
             });
-
-            this.logger.log(
-              `Applied prepayment to debt ID: ${matchingDebt.id}, amount: ${detail.monto}`,
-            );
-          } else {
-            this.logger.log(
-              `No matching debt found for month: ${detail.mes}. Prepayment will remain as PENDIENTE_APLICACION.`,
+            debtToApplyId = newDebt.id;
+          } else if (matchingDebt && matchingDebt.estado === 'PAGADO') {
+            throw new BadRequestException(
+              `El mes ${detail.mes} ya se encuentra pagado.`,
             );
           }
+
+          // Aplicar el pago adelantado a la deuda
+          await this.debtsService.updateDebtStatus(debtToApplyId, detail.monto);
+
+          // Actualizar el estado del detalle de pago adelantado
+          await this.pagoAdelantadoDetalleRepository.update(savedDetail.id, {
+            estado: 'APLICADO',
+            deudaGeneradaId: debtToApplyId,
+          });
+
+          this.logger.log(
+            `Applied prepayment to debt ID: ${debtToApplyId}, amount: ${detail.monto}`,
+          );
         }
       }
 
