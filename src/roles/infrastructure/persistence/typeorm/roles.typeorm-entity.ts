@@ -6,6 +6,7 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
+import { UsersTypeOrmEntity } from '../../../../users/infrastructure/persistence/typeorm/users.typeorm-entity';
 
 @Entity('roles')
 export class RolesTypeOrmEntity {
@@ -28,6 +29,6 @@ export class RolesTypeOrmEntity {
   active: boolean;
 
   // Relations
-  @OneToMany('UsersTypeOrmEntity', 'role')
-  users: any[];
+  @OneToMany(() => UsersTypeOrmEntity, (user) => user.role)
+  users?: UsersTypeOrmEntity[];
 }

@@ -8,7 +8,22 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
+
+// Type-safe wrappers for bcryptjs to avoid ESLint warnings
+const hashPassword = async (
+  password: string,
+  saltRounds: number,
+): Promise<string> => {
+  return bcrypt.hash(password, saltRounds) as Promise<string>;
+};
+
+const comparePassword = async (
+  password: string,
+  hash: string,
+): Promise<boolean> => {
+  return bcrypt.compare(password, hash) as Promise<boolean>;
+};
 import { UsersTypeOrmEntity } from '../../../users/infrastructure/persistence/typeorm/users.typeorm-entity';
 import { RegisterDto } from '../../domain/dtos/register.dto';
 import { LoginDto } from '../../domain/dtos/login.dto';
@@ -48,7 +63,7 @@ export class AuthenticationService {
       }
 
       // Hash password
-      const hashedPassword = await bcrypt.hash(registerDto.password, 10);
+      const hashedPassword = await hashPassword(registerDto.password, 10);
 
       // Create user
       const user = this.usersRepository.create({
@@ -67,10 +82,10 @@ export class AuthenticationService {
 
       return this.toAuthResponse(savedUser);
     } catch (error) {
-      this.logger.error(
-        `Error registering user: ${error.message}`,
-        error.stack,
-      );
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error registering user: ${errorMessage}`, errorStack);
       throw error;
     }
   }
@@ -104,7 +119,10 @@ export class AuthenticationService {
         accessToken,
       };
     } catch (error) {
-      this.logger.error(`Error during login: ${error.message}`, error.stack);
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      const errorStack = error instanceof Error ? error.stack : undefined;
+      this.logger.error(`Error during login: ${errorMessage}`, errorStack);
       throw error;
     }
   }
@@ -122,7 +140,7 @@ export class AuthenticationService {
       return null;
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await comparePassword(password, user.password);
 
     if (!isPasswordValid) {
       return null;

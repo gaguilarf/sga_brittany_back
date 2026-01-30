@@ -8,6 +8,7 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
+import { RolesTypeOrmEntity } from '../../../../roles/infrastructure/persistence/typeorm/roles.typeorm-entity';
 
 @Entity('users')
 export class UsersTypeOrmEntity {
@@ -42,9 +43,9 @@ export class UsersTypeOrmEntity {
   active: boolean;
 
   // Relations
-  @ManyToOne('RolesTypeOrmEntity', 'users')
+  @ManyToOne(() => RolesTypeOrmEntity, (role) => role.users)
   @JoinColumn({ name: 'role_id' })
-  role: any;
+  role?: RolesTypeOrmEntity;
 
   @OneToMany('EnrollmentsTypeOrmEntity', 'advisor')
   enrollmentsAsAdvisor: any[];
