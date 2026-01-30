@@ -2,10 +2,7 @@ activar entorno virtual
 source /home/payxiohs/nodevenv/api.brittanygroup.edu.pe/20/bin/activate && cd /home/payxiohs/api.brittanygroup.edu.pe
 
 instalar dependencias(opcinal si se añadio una nueva)
-npm install
-
-se instalo bcryptjs por este comando
-npm install bcryptjs --legacy-peer-deps
+npm install --production
 
 correr el proyecto
 node dist/src/main.js
