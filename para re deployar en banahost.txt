@@ -4,5 +4,10 @@ source /home/payxiohs/nodevenv/api.brittanygroup.edu.pe/20/bin/activate && cd /h
 instalar dependencias(opcinal si se añadio una nueva)
 npm install --production
 
-correr el proyecto
-node dist/src/main.js
+matar procesos antiguos
+pkill -f "lsnode:/home/payxiohs/api.brittanygroup.edu.pe/"
+
+verificar
+ps aux | grep node
+
+Ir a cpanel y reiniciar el servicio
