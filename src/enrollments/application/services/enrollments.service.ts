@@ -119,7 +119,8 @@ export class EnrollmentsService {
           estado: 'PENDIENTE',
         });
       } else if (createEnrollmentDto.enrollmentType === 'PRODUCT') {
-        // Deuda por producto
+        // Deuda por producto - DESACTIVADO POR AHORA (No se cuentan con los precios)
+        /*
         const productDebt = await this.debtsService.createDebt({
           enrollmentId: savedEnrollment.id,
           tipoDeuda: 'PRODUCTO',
@@ -130,6 +131,7 @@ export class EnrollmentsService {
           estado: 'PENDIENTE',
         });
         debtToPayId = productDebt.id;
+        */
       }
 
       // --- REGISTRO DE PAGO INICIAL ---
