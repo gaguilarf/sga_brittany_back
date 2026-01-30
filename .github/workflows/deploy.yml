@@ -29,6 +29,7 @@ jobs:
         run: |
           mkdir -p deploy
           cp -r dist deploy/
+          cp -r src deploy/
           cp -r scripts deploy/
           cp package.json deploy/
           cp package-lock.json deploy/
