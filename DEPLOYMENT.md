@@ -2,12 +2,9 @@
 
 ## Resumen
 
-Esta guía te ayudará a desplegar el backend de NestJS en **sga.brittanygroup.edu.pe/api** usando GitHub Actions y FTP.
+Esta guía te ayudará a desplegar el backend de NestJS en **api.brittanygroup.edu.pe/api** usando GitHub Actions y FTP.
 
-**Repositorios:**
-
-- **Desarrollo:** [sga2_brittany_backend](https://github.com/gaguilarf/sga2_brittany_backend.git)
-- **Producción:** [sga_brittany_back](https://github.com/gaguilarf/sga_brittany_back.git)
+**Repositorio Principal:** [sga_brittany_back](https://github.com/gaguilarf/sga_brittany_back.git)
 
 ---
 
@@ -171,29 +168,22 @@ location /api {
 
 ### Deployment Automático con GitHub Actions
 
-1. **Hacer merge desde desarrollo a producción:**
+1. **Hacer cambios y commit:**
 
    ```bash
-   # En tu repositorio local (sga2_brittany_backend)
+   # Hacer cambios en tu código
+   git add .
+   git commit -m "feat: nueva funcionalidad"
 
-   # Añadir el remote de producción (solo la primera vez)
-   git remote add production https://github.com/gaguilarf/sga_brittany_back.git
-
-   # Hacer fetch del remote de producción
-   git fetch production
-
-   # Asegurarte de estar en la rama main con los últimos cambios
-   git checkout main
-   git pull origin main
-
-   # Push a producción (rama master)
-   git push production main:master
+   # Push a la rama master (activa GitHub Actions automáticamente)
+   git push origin master
    ```
 
 2. **GitHub Actions automáticamente:**
    - ✅ Instalará las dependencias
    - ✅ Compilará el código TypeScript
-   - ✅ Subirá los archivos vía FTP a `/api/`
+   - ✅ Copiará scripts de seeding
+   - ✅ Subirá los archivos vía FTP
    - ⚠️ **NO sube `node_modules`** (se instalan en el servidor)
 
 3. **En el servidor (REQUERIDO después de cada deployment):**
@@ -203,13 +193,16 @@ location /api {
    ssh tu_usuario@tu_servidor
 
    # Ir al directorio de la API
-   cd /public_html/api
+   cd /api.brittanygroup.edu.pe/
 
    # Instalar dependencias de producción
    npm ci --omit=dev --legacy-peer-deps
 
    # Reiniciar PM2
    pm2 restart brittany-api
+
+   # Verificar logs
+   pm2 logs brittany-api
    ```
 
 ### ¿Por qué no se suben los node_modules?
@@ -227,15 +220,17 @@ npm run build
 
 # Subir vía FTP:
 # - dist/
+# - scripts/
 # - package.json
 # - package-lock.json
+# - tsconfig.json
 # - ecosystem.config.json
 # - start.sh
 # - stop.sh
 # - .env (si no existe)
 
 # En el servidor
-cd /public_html/api
+cd /api.brittanygroup.edu.pe/
 npm ci --omit=dev --legacy-peer-deps
 pm2 restart brittany-api
 ```
@@ -280,14 +275,14 @@ Deberías ver:
 curl http://localhost:3001/api/health
 
 # Desde internet
-curl https://sga.brittanygroup.edu.pe/api/health
+curl https://api.brittanygroup.edu.pe/api/health
 ```
 
 ### 4. Verificar Swagger
 
 Abre en tu navegador:
 
-- https://sga.brittanygroup.edu.pe/api/docs
+- https://api.brittanygroup.edu.pe/api/docs
 
 ---
 
@@ -296,7 +291,7 @@ Abre en tu navegador:
 ### ❌ Error: "Cannot find module"
 
 ```bash
-cd /public_html/api
+cd /api.brittanygroup.edu.pe/
 npm ci --omit=dev --legacy-peer-deps
 pm2 restart brittany-api
 ```
@@ -341,8 +336,8 @@ Verifica que el dominio del frontend esté en la lista de orígenes permitidos e
 ```typescript
 origin: [
   'http://localhost:3000',
-  'https://sga.brittanygroup.edu.pe',
-  'http://sga.brittanygroup.edu.pe',
+  'https://api.brittanygroup.edu.pe',
+  'http://api.brittanygroup.edu.pe',
 ],
 ```
 
@@ -351,7 +346,7 @@ origin: [
 1. Verifica que los secrets estén configurados correctamente
 2. Revisa los logs de GitHub Actions en la pestaña "Actions"
 3. Verifica que el servidor FTP esté accesible
-4. Asegúrate de que el directorio `/public_html/api` exista
+4. Asegúrate de que el directorio de destino exista
 
 ---
 
@@ -392,18 +387,15 @@ pm2 plus
 
 ## 🔄 Flujo de Trabajo Recomendado
 
-### Desarrollo → Producción
-
-1. **Desarrollo en `sga2_brittany_backend`:**
+1. **Desarrollo local:**
 
    ```bash
    # Hacer cambios en tu código
    git add .
    git commit -m "feat: nueva funcionalidad"
-   git push origin main
    ```
 
-2. **Probar en desarrollo:**
+2. **Probar localmente:**
    - Ejecutar tests: `npm test`
    - Verificar que todo funcione localmente
    - Revisar Swagger docs
@@ -411,15 +403,15 @@ pm2 plus
 3. **Desplegar a producción:**
 
    ```bash
-   # Push al repositorio de producción
-   git push production main:master
+   # Push a master (activa GitHub Actions)
+   git push origin master
    ```
 
 4. **Verificar en el servidor:**
 
    ```bash
    ssh usuario@servidor
-   cd /public_html/api
+   cd /api.brittanygroup.edu.pe/
    npm ci --omit=dev --legacy-peer-deps
    pm2 restart brittany-api
    pm2 logs brittany-api
@@ -521,9 +513,6 @@ Una vez desplegado el backend:
 > [!TIP]
 > **PM2:** Es altamente recomendado usar PM2 en lugar de ejecutar directamente con `node` porque PM2 reiniciará automáticamente la aplicación si falla.
 
-> [!NOTE]
-> **Repositorios separados:** El repositorio de desarrollo (`sga2_brittany_backend`) se usa para desarrollo activo, mientras que el repositorio de producción (`sga_brittany_back`) se usa exclusivamente para deployments.
-
 ---
 
-¡Listo! Tu API de Brittany Group estará disponible en **https://sga.brittanygroup.edu.pe/api** 🎉
+¡Listo! Tu API de Brittany Group estará disponible en **https://api.brittanygroup.edu.pe/api** 🎉

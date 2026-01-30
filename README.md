@@ -132,7 +132,7 @@ Para desplegar esta aplicación en producción, consulta la [Guía de Deployment
 - Proxy reverso (Apache/Nginx)
 - Troubleshooting y monitoreo
 
-**Repositorio de Producción:** [sga_brittany_back](https://github.com/gaguilarf/sga_brittany_back.git)
+**Repositorio Principal:** [sga_brittany_back](https://github.com/gaguilarf/sga_brittany_back.git) (Producción)
 
 ---
 

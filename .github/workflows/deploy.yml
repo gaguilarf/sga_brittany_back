@@ -3,7 +3,7 @@ name: Deploy to Production
 on:
   push:
     branches:
-      - main # Se ejecuta automáticamente al hacer push a main
+      - master # Se ejecuta automáticamente al hacer push a master
   workflow_dispatch: # También permite ejecución manual desde GitHub
 
 jobs:
@@ -29,12 +29,14 @@ jobs:
         run: |
           mkdir -p deploy
           cp -r dist deploy/
+          cp -r scripts deploy/
           cp package.json deploy/
           cp package-lock.json deploy/
           cp .env.production deploy/.env.production
           cp start.sh deploy/
           cp stop.sh deploy/
           cp ecosystem.config.json deploy/
+          cp tsconfig.json deploy/
           echo "✅ Deployment package created (node_modules will be installed on server)"
 
       - name: 🚀 Upload to server via FTP
