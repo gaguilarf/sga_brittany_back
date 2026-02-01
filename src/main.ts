@@ -53,6 +53,11 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
+
+  app.getHttpAdapter().get('/api/docs-json', (req, res) => {
+    res.json(document);
+  });
+
   SwaggerModule.setup('api/docs', app, document, {
     customSiteTitle: 'Brittany Group API',
     customCss: '.swagger-ui .topbar { display: none }',
