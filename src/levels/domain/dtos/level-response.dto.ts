@@ -1,19 +1,13 @@
-export class CourseResponseDto {
-  id: number;
-  name: string;
-  active: boolean;
-}
-
 export class LevelResponseDto {
-  id: number;
-  courseId: number;
+  id: string;
+  planId: string;
   nombreNivel: string;
   active: boolean;
 }
 
 export class CycleResponseDto {
-  id: number;
-  levelId: number;
+  id: string;
+  levelId: string;
   nombreCiclo: string;
   active: boolean;
 }

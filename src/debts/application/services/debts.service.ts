@@ -18,7 +18,7 @@ export class DebtsService {
   }
 
   async getPendingDebtsByEnrollment(
-    enrollmentId: number,
+    enrollmentId: string,
   ): Promise<DebtTypeOrmEntity[]> {
     return await this.debtRepository.find({
       where: {
@@ -29,14 +29,14 @@ export class DebtsService {
     });
   }
 
-  async findOne(id: number): Promise<DebtTypeOrmEntity | null> {
+  async findOne(id: string): Promise<DebtTypeOrmEntity | null> {
     return await this.debtRepository.findOne({
       where: { id, active: true },
     });
   }
 
   async updateDebtStatus(
-    debtId: number,
+    debtId: string,
     montoPagado: number,
   ): Promise<DebtTypeOrmEntity> {
     const debt = await this.debtRepository.findOne({ where: { id: debtId } });
@@ -55,14 +55,14 @@ export class DebtsService {
     return await this.debtRepository.save(debt);
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     const debt = await this.debtRepository.findOne({ where: { id } });
     if (!debt) throw new Error('Deuda no encontrada');
     await this.debtRepository.remove(debt);
   }
 
   async findDebtByEnrollmentAndMonth(
-    enrollmentId: number,
+    enrollmentId: string,
     month: string, // Format: "YYYY-MM"
   ): Promise<DebtTypeOrmEntity | null> {
     return await this.debtRepository.findOne({

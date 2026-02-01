@@ -2,7 +2,6 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiQuery } from '@nestjs/swagger';
 import { LevelsService } from '../../application/services/levels.service';
 import {
-  CourseResponseDto,
   LevelResponseDto,
   CycleResponseDto,
 } from '../../domain/dtos/level-response.dto';
@@ -12,27 +11,21 @@ import {
 export class LevelsController {
   constructor(private readonly levelsService: LevelsService) {}
 
-  @Get('courses')
-  @ApiOperation({ summary: 'Obtener todos los cursos activos' })
-  async getCourses(): Promise<CourseResponseDto[]> {
-    return this.levelsService.findAllCourses();
-  }
-
   @Get()
-  @ApiOperation({ summary: 'Obtener niveles filtrados por curso' })
-  @ApiQuery({ name: 'courseId', required: true, type: Number })
-  async getLevelsByCourse(
-    @Query('courseId') courseId: number,
+  @ApiOperation({ summary: 'Obtener niveles filtrados por plan' })
+  @ApiQuery({ name: 'planId', required: true, type: String })
+  async getLevelsByPlan(
+    @Query('planId') planId: string,
   ): Promise<LevelResponseDto[]> {
-    return this.levelsService.findLevelsByCourse(Number(courseId));
+    return this.levelsService.findLevelsByPlan(planId);
   }
 
   @Get('cycles')
   @ApiOperation({ summary: 'Obtener ciclos filtrados por nivel' })
-  @ApiQuery({ name: 'levelId', required: true, type: Number })
+  @ApiQuery({ name: 'levelId', required: true, type: String })
   async getCyclesByLevel(
-    @Query('levelId') levelId: number,
+    @Query('levelId') levelId: string,
   ): Promise<CycleResponseDto[]> {
-    return this.levelsService.findCyclesByLevel(Number(levelId));
+    return this.levelsService.findCyclesByLevel(levelId);
   }
 }

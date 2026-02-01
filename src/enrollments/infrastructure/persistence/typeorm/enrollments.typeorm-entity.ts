@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
@@ -12,7 +12,6 @@ import { ProductsTypeOrmEntity } from '../../../../products/infrastructure/persi
 import { StudentsTypeOrmEntity } from '../../../../students/infrastructure/persistence/typeorm/students.typeorm-entity';
 import { CampusesTypeOrmEntity } from '../../../../campuses/infrastructure/persistence/typeorm/campuses.typeorm-entity';
 import { PlansTypeOrmEntity } from '../../../../plans/infrastructure/persistence/typeorm/plans.typeorm-entity';
-import { CoursesTypeOrmEntity } from '../../../../levels/infrastructure/persistence/typeorm/courses.typeorm-entity';
 import { UsersTypeOrmEntity } from '../../../../users/infrastructure/persistence/typeorm/users.typeorm-entity';
 import { GroupsTypeOrmEntity } from '../../../../groups/infrastructure/persistence/typeorm/groups.typeorm-entity';
 import { LevelsTypeOrmEntity } from '../../../../levels/infrastructure/persistence/typeorm/levels.typeorm-entity';
@@ -23,29 +22,29 @@ import { DebtTypeOrmEntity } from '../../../../debts/infrastructure/persistence/
 
 @Entity('matriculas')
 export class EnrollmentsTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string;
 
-  @Column({ name: 'alumno_id', type: 'int' })
-  studentId: number;
+  @Column({ name: 'alumno_id', type: 'uuid' })
+  studentId: string;
 
-  @Column({ name: 'sede_id', type: 'int' })
-  campusId: number;
+  @Column({ name: 'sede_id', type: 'uuid' })
+  campusId: string;
 
-  @Column({ name: 'plan_id', type: 'int', nullable: true })
-  planId: number;
+  @Column({ name: 'plan_id', type: 'uuid', nullable: true })
+  planId: string;
 
-  @Column({ name: 'curso_id', type: 'int', nullable: true })
-  courseId: number;
+  @Column({ name: 'curso_id', type: 'uuid', nullable: true })
+  courseId: string;
 
-  @Column({ name: 'grupo_id', type: 'int', nullable: true })
-  groupId: number;
+  @Column({ name: 'grupo_id', type: 'uuid', nullable: true })
+  groupId: string;
 
-  @Column({ name: 'nivel_inicial_id', type: 'int', nullable: true })
-  initialLevelId: number;
+  @Column({ name: 'nivel_inicial_id', type: 'uuid', nullable: true })
+  initialLevelId: string;
 
-  @Column({ name: 'ciclo_inicial_id', type: 'int', nullable: true })
-  initialCycleId: number;
+  @Column({ name: 'ciclo_inicial_id', type: 'uuid', nullable: true })
+  initialCycleId: string;
 
   @Column({
     name: 'enrollment_type',
@@ -55,8 +54,8 @@ export class EnrollmentsTypeOrmEntity {
   })
   enrollmentType: string;
 
-  @Column({ name: 'product_id', type: 'int', nullable: true })
-  productId: number;
+  @Column({ name: 'product_id', type: 'uuid', nullable: true })
+  productId: string;
 
   @Column({ name: 'exam_date', type: 'date', nullable: true })
   examDate: Date;
@@ -75,8 +74,8 @@ export class EnrollmentsTypeOrmEntity {
   })
   tipoInscripcion: string;
 
-  @Column({ name: 'asesor_id', type: 'int' })
-  advisorId: number;
+  @Column({ name: 'asesor_id', type: 'uuid' })
+  advisorId: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   origen: string;
@@ -138,10 +137,6 @@ export class EnrollmentsTypeOrmEntity {
   @ManyToOne(() => PlansTypeOrmEntity, (plan) => plan.enrollments)
   @JoinColumn({ name: 'plan_id' })
   plan: PlansTypeOrmEntity;
-
-  @ManyToOne(() => CoursesTypeOrmEntity, (course) => course.enrollments)
-  @JoinColumn({ name: 'curso_id' })
-  course: CoursesTypeOrmEntity;
 
   @ManyToOne(() => UsersTypeOrmEntity, (user) => user.enrollmentsAsAdvisor)
   @JoinColumn({ name: 'asesor_id' })

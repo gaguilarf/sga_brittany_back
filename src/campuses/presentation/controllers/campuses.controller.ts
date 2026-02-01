@@ -82,7 +82,7 @@ export class CampusesController {
   @Get(':id')
   @Roles(1, 2, 3, 4) // All roles can view
   @ApiOperation({ summary: 'Get campus by ID' })
-  @ApiParam({ name: 'id', description: 'Campus ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Campus ID', type: String })
   @ApiResponse({
     status: 200,
     description: 'Campus found',
@@ -90,16 +90,14 @@ export class CampusesController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Campus not found' })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<CampusResponseDto> {
+  async findOne(@Param('id') id: string): Promise<CampusResponseDto> {
     return this.campusesService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(1) // Only Administrador
   @ApiOperation({ summary: 'Update campus by ID' })
-  @ApiParam({ name: 'id', description: 'Campus ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Campus ID', type: String })
   @ApiResponse({
     status: 200,
     description: 'Campus updated successfully',
@@ -116,7 +114,7 @@ export class CampusesController {
     description: 'Conflict - Campus name already exists',
   })
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateCampusDto: UpdateCampusDto,
   ): Promise<CampusResponseDto> {
     return this.campusesService.update(id, updateCampusDto);
@@ -126,7 +124,7 @@ export class CampusesController {
   @Roles(1) // Only Administrador
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete campus by ID' })
-  @ApiParam({ name: 'id', description: 'Campus ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Campus ID', type: String })
   @ApiResponse({ status: 204, description: 'Campus deleted successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({
@@ -134,7 +132,7 @@ export class CampusesController {
     description: 'Forbidden - Only administrators can delete',
   })
   @ApiResponse({ status: 404, description: 'Campus not found' })
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.campusesService.remove(id);
   }
 }

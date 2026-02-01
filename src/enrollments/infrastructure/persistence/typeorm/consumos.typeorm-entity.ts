@@ -11,11 +11,11 @@ import { EnrollmentsTypeOrmEntity } from './enrollments.typeorm-entity';
 
 @Entity('consumos')
 export class ConsumoTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ name: 'matricula_id', type: 'int' })
-  enrollmentId: number;
+  @Column({ name: 'matricula_id', type: 'uuid' })
+  enrollmentId: string;
 
   @Column({ type: 'varchar', length: 7 }) // Format: YYYY-MM
   mes: string;

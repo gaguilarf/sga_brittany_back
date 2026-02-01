@@ -149,7 +149,7 @@ export class AuthenticationService {
     return user;
   }
 
-  async getCurrentUser(userId: number): Promise<AuthResponseDto> {
+  async getCurrentUser(userId: string): Promise<AuthResponseDto> {
     const user = await this.usersRepository.findOne({
       where: { id: userId, active: true },
       relations: ['role'],
@@ -162,7 +162,7 @@ export class AuthenticationService {
     return this.toAuthResponse(user);
   }
 
-  async refreshToken(userId: number): Promise<{ accessToken: string }> {
+  async refreshToken(userId: string): Promise<{ accessToken: string }> {
     const user = await this.usersRepository.findOne({
       where: { id: userId, active: true },
     });

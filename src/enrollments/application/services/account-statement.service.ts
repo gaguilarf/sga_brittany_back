@@ -26,7 +26,7 @@ export class AccountStatementService {
     private readonly debtsService: DebtsService,
   ) {}
 
-  async processMonthlyConsumption(enrollmentId: number, mes: string) {
+  async processMonthlyConsumption(enrollmentId: string, mes: string) {
     this.logger.log(
       `Processing consumption for enrollment ${enrollmentId} - ${mes}`,
     );
@@ -160,7 +160,7 @@ export class AccountStatementService {
     return new Date(year, month - 1, 20);
   }
 
-  async getAccountStatement(enrollmentId: number) {
+  async getAccountStatement(enrollmentId: string) {
     const enrollment = await this.enrollmentsRepository.findOne({
       where: { id: enrollmentId },
       relations: ['debts', 'payments'],
@@ -262,7 +262,7 @@ export class AccountStatementService {
 
     const monthlyDebtsByMonth = new Map<
       string,
-      { total: number; ids: number[] }
+      { total: number; ids: string[] }
     >();
     enrollment.debts
       .filter(

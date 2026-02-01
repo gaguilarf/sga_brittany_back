@@ -1,19 +1,18 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { PriceSedePlanTypeOrmEntity } from '../../../../plans/infrastructure/persistence/typeorm/price-sede-plan.typeorm-entity';
 import { EnrollmentsTypeOrmEntity } from '../../../../enrollments/infrastructure/persistence/typeorm/enrollments.typeorm-entity';
 import { PaymentsTypeOrmEntity } from '../../../../payments/infrastructure/persistence/typeorm/payments.typeorm-entity';
 
 @Entity('sedes')
 export class CampusesTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string;
 
   @Column({ type: 'varchar', length: 255 })
   name: string;
@@ -43,6 +42,6 @@ export class CampusesTypeOrmEntity {
   @OneToMany('AdminLeadsTypeOrmEntity', 'campus')
   adminLeads: any[];
 
-  @OneToMany(() => PriceSedePlanTypeOrmEntity, (price) => price.campus)
-  prices: PriceSedePlanTypeOrmEntity[];
+  @OneToMany('PriceSedePlanTypeOrmEntity', 'campus')
+  prices: any[];
 }

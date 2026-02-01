@@ -11,17 +11,17 @@ import {
 
 @Entity('notas')
 export class GradesTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ name: 'alumno_id', type: 'int' })
-  studentId: number;
+  @Column({ name: 'alumno_id', type: 'uuid' })
+  studentId: string;
 
-  @Column({ name: 'grupo_id', type: 'int' })
-  groupId: number;
+  @Column({ name: 'grupo_id', type: 'uuid' })
+  groupId: string;
 
-  @Column({ name: 'ciclo_id', type: 'int' })
-  cycleId: number;
+  @Column({ name: 'ciclo_id', type: 'uuid' })
+  cycleId: string;
 
   @Column({ type: 'int', nullable: true })
   mes: number;
@@ -41,8 +41,8 @@ export class GradesTypeOrmEntity {
   @Column({ type: 'varchar', length: 50, nullable: true })
   estado: string; // Pendiente, Publicada, Archivada
 
-  @Column({ name: 'docente_id', type: 'int' })
-  teacherId: number;
+  @Column({ name: 'docente_id', type: 'uuid' })
+  teacherId: string;
 
   @Column({ type: 'text', nullable: true })
   observaciones: string;

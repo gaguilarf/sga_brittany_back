@@ -9,10 +9,10 @@ import {
 } from 'class-validator';
 
 export class CreateAttendanceDto {
-  @ApiProperty({ description: 'Student ID', example: 1 })
-  @IsInt()
+  @ApiProperty({ description: 'Student ID', example: 'uuid' })
+  @IsString()
   @IsNotEmpty()
-  studentId: number;
+  studentId: string;
 
   @ApiProperty({ description: 'Attendance date', example: '2024-01-15' })
   @IsDateString()
@@ -30,8 +30,8 @@ export class CreateAttendanceDto {
   @MaxLength(50)
   estado?: string;
 
-  @ApiProperty({ description: 'Teacher (User) ID', example: 1 })
-  @IsInt()
+  @ApiProperty({ description: 'Teacher (User) ID', example: 'uuid' })
+  @IsString()
   @IsNotEmpty()
-  teacherId: number;
+  teacherId: string;
 }

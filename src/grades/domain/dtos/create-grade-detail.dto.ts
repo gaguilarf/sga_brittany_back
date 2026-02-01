@@ -9,10 +9,10 @@ import {
 } from 'class-validator';
 
 export class CreateGradeDetailDto {
-  @ApiProperty({ description: 'Grade ID', example: 1 })
-  @IsInt()
+  @ApiProperty({ description: 'Grade ID', example: 'uuid' })
+  @IsString()
   @IsNotEmpty()
-  gradeId: number;
+  gradeId: string;
 
   @ApiProperty({ example: 18, required: false })
   @IsInt()

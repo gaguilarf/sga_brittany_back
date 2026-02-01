@@ -12,24 +12,24 @@ import {
 
 export class CreateEnrollmentDto {
   @ApiProperty({ description: 'Student ID', example: 1 })
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  studentId: number;
+  studentId: string;
 
   @ApiProperty({ description: 'Campus ID', example: 1 })
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  campusId: number;
+  campusId: string;
 
   @ApiProperty({ description: 'Plan ID', example: 1, required: false })
-  @IsInt()
+  @IsString()
   @IsOptional()
-  planId?: number;
+  planId?: string;
 
   @ApiProperty({ description: 'Course ID', example: 1, required: false })
-  @IsInt()
+  @IsString()
   @IsOptional()
-  courseId?: number;
+  courseId?: string;
 
   @ApiProperty({
     description: 'Modality',
@@ -54,19 +54,19 @@ export class CreateEnrollmentDto {
   horario?: string;
 
   @ApiProperty({ description: 'Group ID', example: 1, required: false })
-  @IsInt()
+  @IsString()
   @IsOptional()
-  groupId?: number;
+  groupId?: string;
 
   @ApiProperty({ description: 'Initial Level ID', example: 1, required: false })
-  @IsInt()
+  @IsString()
   @IsOptional()
-  initialLevelId?: number;
+  initialLevelId?: string;
 
   @ApiProperty({ description: 'Initial Cycle ID', example: 1, required: false })
-  @IsInt()
+  @IsString()
   @IsOptional()
-  initialCycleId?: number;
+  initialCycleId?: string;
 
   @ApiProperty({
     description: 'Enrollment type',
@@ -80,9 +80,9 @@ export class CreateEnrollmentDto {
   tipoInscripcion?: string;
 
   @ApiProperty({ description: 'Advisor ID', example: 1 })
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  advisorId: number;
+  advisorId: string;
 
   @ApiProperty({
     description: 'Origin',
@@ -127,8 +127,9 @@ export class CreateEnrollmentDto {
     required: false,
   })
   @IsOptional()
-  @IsInt()
-  productId?: number;
+  @IsOptional()
+  @IsString()
+  productId?: string;
 
   @IsOptional()
   @IsDateString()

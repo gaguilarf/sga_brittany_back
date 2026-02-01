@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
@@ -10,7 +10,7 @@ import { UsersTypeOrmEntity } from '../../../../users/infrastructure/persistence
 
 @Entity('roles')
 export class RolesTypeOrmEntity {
-  @PrimaryGeneratedColumn()
+  @PrimaryColumn()
   id: number;
 
   @Column({ type: 'varchar', length: 100 })

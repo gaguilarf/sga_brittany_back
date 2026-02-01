@@ -1,11 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class PaymentResponseDto {
-  @ApiProperty({ description: 'Payment ID', example: 1 })
-  id: number;
+  @ApiProperty({
+    description: 'Payment ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  id: string;
 
-  @ApiProperty({ description: 'Enrollment ID', example: 1 })
-  enrollmentId: number;
+  @ApiProperty({
+    description: 'Enrollment ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  enrollmentId: string;
 
   @ApiProperty({
     description: 'Payment type',
@@ -38,8 +44,12 @@ export class PaymentResponseDto {
   })
   fechaPago?: Date;
 
-  @ApiProperty({ description: 'Campus ID', example: 1, required: false })
-  campusId?: number;
+  @ApiProperty({
+    description: 'Campus ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+  })
+  campusId?: string;
 
   @ApiProperty({ description: 'Active status', example: true })
   active: boolean;

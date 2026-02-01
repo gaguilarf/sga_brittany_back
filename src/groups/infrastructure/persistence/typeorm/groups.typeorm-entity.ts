@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
@@ -11,17 +11,17 @@ import {
 
 @Entity('grupos')
 export class GroupsTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string;
 
   @Column({ name: 'nombre_grupo', type: 'varchar', length: 255 })
   nombreGrupo: string;
 
-  @Column({ name: 'sede_id', type: 'int' })
-  campusId: number;
+  @Column({ name: 'sede_id', type: 'uuid' })
+  campusId: string;
 
-  @Column({ name: 'ciclo_id', type: 'int' })
-  cycleId: number;
+  @Column({ name: 'ciclo_id', type: 'uuid' })
+  cycleId: string;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   horario: string;

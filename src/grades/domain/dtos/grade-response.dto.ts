@@ -2,17 +2,17 @@ import { ApiProperty } from '@nestjs/swagger';
 import { GradeDetailResponseDto } from './grade-detail-response.dto';
 
 export class GradeResponseDto {
-  @ApiProperty({ example: 1 })
-  id: number;
+  @ApiProperty({ example: 'uuid' })
+  id: string;
 
-  @ApiProperty({ example: 1 })
-  studentId: number;
+  @ApiProperty({ example: 'uuid' })
+  studentId: string;
 
-  @ApiProperty({ example: 1 })
-  groupId: number;
+  @ApiProperty({ example: 'uuid' })
+  groupId: string;
 
-  @ApiProperty({ example: 1 })
-  cycleId: number;
+  @ApiProperty({ example: 'uuid' })
+  cycleId: string;
 
   @ApiProperty({ example: 1, required: false })
   mes?: number;
@@ -35,8 +35,8 @@ export class GradeResponseDto {
   @ApiProperty({ type: [GradeDetailResponseDto], required: false })
   details?: GradeDetailResponseDto[];
 
-  @ApiProperty({ example: 1 })
-  teacherId: number;
+  @ApiProperty({ example: 'uuid' })
+  teacherId: string;
 
   @ApiProperty({ example: 'Buen desempeño', required: false })
   observaciones?: string;

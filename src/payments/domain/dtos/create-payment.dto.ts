@@ -10,9 +10,9 @@ import {
 
 export class CreatePaymentDto {
   @ApiProperty({ description: 'Enrollment ID', example: 1 })
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  enrollmentId: number;
+  enrollmentId: string;
 
   @ApiProperty({
     description: 'Payment type',
@@ -61,12 +61,12 @@ export class CreatePaymentDto {
   fechaPago?: string;
 
   @IsOptional()
-  campusId?: number;
+  campusId?: string;
 
   @ApiProperty({ description: 'Debt ID', example: 1, required: false })
-  @IsInt()
+  @IsString()
   @IsOptional()
-  debtId?: number;
+  debtId?: string;
 
   @ApiProperty({
     description: 'Indicador de pago adelantado',

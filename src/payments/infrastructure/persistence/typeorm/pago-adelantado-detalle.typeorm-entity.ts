@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
@@ -13,14 +13,14 @@ import { DebtTypeOrmEntity } from '../../../../debts/infrastructure/persistence/
 
 @Entity('pagos_adelantados_detalle')
 export class PagoAdelantadoDetalleTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string;
 
-  @Column({ name: 'pago_id', type: 'int' })
-  pagoId: number;
+  @Column({ name: 'pago_id', type: 'uuid' })
+  pagoId: string;
 
-  @Column({ name: 'matricula_id', type: 'int' })
-  enrollmentId: number;
+  @Column({ name: 'matricula_id', type: 'uuid' })
+  enrollmentId: string;
 
   @Column({ name: 'mes_adelantado', type: 'varchar', length: 7 })
   mesAdelantado: string;
@@ -43,8 +43,8 @@ export class PagoAdelantadoDetalleTypeOrmEntity {
   @Column({ name: 'fecha_aplicacion', type: 'date', nullable: true })
   fechaAplicacion: Date;
 
-  @Column({ name: 'deuda_generada_id', type: 'int', nullable: true })
-  deudaGeneradaId: number;
+  @Column({ name: 'deuda_generada_id', type: 'uuid', nullable: true })
+  deudaGeneradaId: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

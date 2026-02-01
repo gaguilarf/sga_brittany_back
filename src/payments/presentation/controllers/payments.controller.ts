@@ -64,29 +64,35 @@ export class PaymentsController {
   @Get(':id')
   @Roles(1, 2, 3, 4) // All roles
   @ApiOperation({ summary: 'Get payment by ID' })
-  @ApiParam({ name: 'id', description: 'Payment ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Payment ID', type: String })
   @ApiResponse({
     status: 200,
     description: 'Payment found',
     type: PaymentResponseDto,
   })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<PaymentResponseDto> {
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Payment not found' })
+  async findOne(@Param('id') id: string): Promise<PaymentResponseDto> {
     return this.paymentsService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(1, 4) // Administrador, Secretaria
   @ApiOperation({ summary: 'Update payment by ID' })
-  @ApiParam({ name: 'id', description: 'Payment ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Payment ID', type: String })
   @ApiResponse({
     status: 200,
     description: 'Payment updated successfully',
     type: PaymentResponseDto,
   })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Insufficient permissions',
+  })
+  @ApiResponse({ status: 404, description: 'Payment not found' })
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updatePaymentDto: UpdatePaymentDto,
   ): Promise<PaymentResponseDto> {
     return this.paymentsService.update(id, updatePaymentDto);
@@ -95,12 +101,14 @@ export class PaymentsController {
   @Get(':id/prepayment-details')
   @Roles(1, 2, 3, 4) // All roles
   @ApiOperation({ summary: 'Get prepayment details by payment ID' })
-  @ApiParam({ name: 'id', description: 'Payment ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Payment ID', type: String })
   @ApiResponse({
     status: 200,
     description: 'Prepayment details found',
   })
-  async getPrepaymentDetails(@Param('id', ParseIntPipe) id: number) {
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'Payment not found' })
+  async getPrepaymentDetails(@Param('id') id: string) {
     return this.paymentsService.getPrepaymentDetails(id);
   }
 
@@ -108,9 +116,15 @@ export class PaymentsController {
   @Roles(1) // Only Administrador
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete payment by ID' })
-  @ApiParam({ name: 'id', description: 'Payment ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Payment ID', type: String })
   @ApiResponse({ status: 204, description: 'Payment deleted successfully' })
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - Only administrators can delete',
+  })
+  @ApiResponse({ status: 404, description: 'Payment not found' })
+  async remove(@Param('id') id: string): Promise<void> {
     return this.paymentsService.remove(id);
   }
 }

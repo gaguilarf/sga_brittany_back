@@ -52,9 +52,9 @@ export class DebtsController {
   @Get('enrollment/:enrollmentId')
   @Roles(1, 2, 3, 4)
   @ApiOperation({ summary: 'Get all pending debts for an enrollment' })
-  @ApiParam({ name: 'enrollmentId', type: Number })
+  @ApiParam({ name: 'enrollmentId', type: String })
   async findPendingByEnrollment(
-    @Param('enrollmentId', ParseIntPipe) enrollmentId: number,
+    @Param('enrollmentId') enrollmentId: string,
   ): Promise<DebtResponseDto[]> {
     const debts =
       await this.debtsService.getPendingDebtsByEnrollment(enrollmentId);
@@ -64,9 +64,7 @@ export class DebtsController {
   @Get(':id')
   @Roles(1, 2, 3, 4)
   @ApiOperation({ summary: 'Get debt by ID' })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<DebtResponseDto> {
+  async findOne(@Param('id') id: string): Promise<DebtResponseDto> {
     const debt = await this.debtsService.findOne(id);
     if (!debt) throw new Error('Deuda no encontrada');
     return this.toResponseDto(debt);
@@ -76,8 +74,8 @@ export class DebtsController {
   @Roles(1) // Solo Administrador
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete a debt by ID' })
-  @ApiParam({ name: 'id', type: Number })
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  @ApiParam({ name: 'id', type: String })
+  async remove(@Param('id') id: string): Promise<void> {
     await this.debtsService.remove(id);
   }
 

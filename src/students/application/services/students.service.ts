@@ -93,7 +93,7 @@ export class StudentsService {
     }
   }
 
-  async findOne(id: number): Promise<StudentResponseDto> {
+  async findOne(id: string): Promise<StudentResponseDto> {
     try {
       this.logger.log(`Fetching student with ID: ${id}`);
       const student = await this.studentsRepository.findOne({
@@ -115,7 +115,7 @@ export class StudentsService {
   }
 
   async update(
-    id: number,
+    id: string,
     updateStudentDto: UpdateStudentDto,
   ): Promise<StudentResponseDto> {
     try {
@@ -173,7 +173,7 @@ export class StudentsService {
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     try {
       this.logger.log(`Removing student with ID: ${id}`);
 

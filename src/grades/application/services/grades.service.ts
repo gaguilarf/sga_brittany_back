@@ -48,7 +48,7 @@ export class GradesService {
     }
   }
 
-  async findOne(id: number): Promise<GradeResponseDto> {
+  async findOne(id: string): Promise<GradeResponseDto> {
     try {
       this.logger.log(`Fetching grade with ID: ${id}`);
       const grade = await this.gradesRepository.findOne({
@@ -71,7 +71,7 @@ export class GradesService {
   }
 
   async update(
-    id: number,
+    id: string,
     updateGradeDto: UpdateGradeDto,
   ): Promise<GradeResponseDto> {
     try {
@@ -96,7 +96,7 @@ export class GradesService {
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     try {
       this.logger.log(`Removing grade with ID: ${id}`);
       const grade = await this.gradesRepository.findOne({

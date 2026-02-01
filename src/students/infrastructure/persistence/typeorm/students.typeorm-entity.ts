@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
@@ -11,8 +11,8 @@ import {
 
 @Entity('alumnos')
 export class StudentsTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string;
 
   @Column({ type: 'varchar', length: 255 })
   nombre: string;
@@ -26,11 +26,11 @@ export class StudentsTypeOrmEntity {
   @Column({ type: 'int', nullable: true })
   edad: number;
 
-  @Column({ name: 'ciclo_actual_id', type: 'int', nullable: true })
-  currentCycleId: number;
+  @Column({ name: 'ciclo_actual_id', type: 'uuid', nullable: true })
+  currentCycleId: string;
 
-  @Column({ name: 'grupo_actual_id', type: 'int', nullable: true })
-  currentGroupId: number;
+  @Column({ name: 'grupo_actual_id', type: 'uuid', nullable: true })
+  currentGroupId: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   distrito: string;

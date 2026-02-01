@@ -1,20 +1,36 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class EnrollmentResponseDto {
-  @ApiProperty({ description: 'Enrollment ID', example: 1 })
-  id: number;
+  @ApiProperty({
+    description: 'Enrollment ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  id: string;
 
-  @ApiProperty({ description: 'Student ID', example: 1 })
-  studentId: number;
+  @ApiProperty({
+    description: 'Student ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  studentId: string;
 
-  @ApiProperty({ description: 'Campus ID', example: 1 })
-  campusId: number;
+  @ApiProperty({
+    description: 'Campus ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  campusId: string;
 
-  @ApiProperty({ description: 'Plan ID', example: 1 })
-  planId: number;
+  @ApiProperty({
+    description: 'Plan ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  planId: string;
 
-  @ApiProperty({ description: 'Course ID', example: 1, required: false })
-  courseId?: number;
+  @ApiProperty({
+    description: 'Course ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+  })
+  courseId?: string;
 
   @ApiProperty({
     description: 'Modality',
@@ -30,14 +46,26 @@ export class EnrollmentResponseDto {
   })
   horario?: string;
 
-  @ApiProperty({ description: 'Group ID', example: 1, required: false })
-  groupId?: number;
+  @ApiProperty({
+    description: 'Group ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+  })
+  groupId?: string;
 
-  @ApiProperty({ description: 'Initial Level ID', example: 1, required: false })
-  initialLevelId?: number;
+  @ApiProperty({
+    description: 'Initial Level ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+  })
+  initialLevelId?: string;
 
-  @ApiProperty({ description: 'Initial Cycle ID', example: 1, required: false })
-  initialCycleId?: number;
+  @ApiProperty({
+    description: 'Initial Cycle ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+  })
+  initialCycleId?: string;
 
   @ApiProperty({
     description: 'Enrollment Type',
@@ -46,8 +74,12 @@ export class EnrollmentResponseDto {
   })
   enrollmentType: string;
 
-  @ApiProperty({ description: 'Product ID', example: 1, required: false })
-  productId?: number;
+  @ApiProperty({
+    description: 'Product ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+  })
+  productId?: string;
 
   @ApiProperty({
     description: 'Exam Date',
@@ -63,8 +95,11 @@ export class EnrollmentResponseDto {
   })
   tipoInscripcion?: string;
 
-  @ApiProperty({ description: 'Advisor ID', example: 1 })
-  advisorId: number;
+  @ApiProperty({
+    description: 'Advisor ID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  advisorId: string;
 
   @ApiProperty({ description: 'Origin', example: 'Facebook', required: false })
   origen?: string;

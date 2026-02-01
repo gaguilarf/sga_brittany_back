@@ -55,20 +55,18 @@ export class AttendanceController {
 
   @Get(':id')
   @Roles(1, 2, 3, 4)
-  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'id', type: String })
   @ApiResponse({ status: 200, type: AttendanceResponseDto })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<AttendanceResponseDto> {
+  async findOne(@Param('id') id: string): Promise<AttendanceResponseDto> {
     return this.attendanceService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(1, 2, 4)
-  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'id', type: String })
   @ApiResponse({ status: 200, type: AttendanceResponseDto })
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateAttendanceDto: UpdateAttendanceDto,
   ): Promise<AttendanceResponseDto> {
     return this.attendanceService.update(id, updateAttendanceDto);
@@ -77,8 +75,8 @@ export class AttendanceController {
   @Delete(':id')
   @Roles(1)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiParam({ name: 'id', type: Number })
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  @ApiParam({ name: 'id', type: String })
+  async remove(@Param('id') id: string): Promise<void> {
     return this.attendanceService.remove(id);
   }
 }

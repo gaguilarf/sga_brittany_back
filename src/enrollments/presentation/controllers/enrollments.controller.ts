@@ -44,8 +44,8 @@ export class EnrollmentsController {
   @Get(':id/account-statement')
   @Roles(1, 2, 3, 4) // All roles
   @ApiOperation({ summary: 'Get student account statement' })
-  @ApiParam({ name: 'id', description: 'Enrollment ID', type: Number })
-  async getAccountStatement(@Param('id', ParseIntPipe) id: number) {
+  @ApiParam({ name: 'id', description: 'Enrollment ID', type: String })
+  async getAccountStatement(@Param('id') id: string) {
     return this.accountStatementService.getAccountStatement(id);
   }
 
@@ -94,29 +94,27 @@ export class EnrollmentsController {
   @Get(':id')
   @Roles(1, 2, 3, 4) // All roles
   @ApiOperation({ summary: 'Get enrollment by ID' })
-  @ApiParam({ name: 'id', description: 'Enrollment ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Enrollment ID', type: String })
   @ApiResponse({
     status: 200,
     description: 'Enrollment found',
     type: EnrollmentResponseDto,
   })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<EnrollmentResponseDto> {
+  async findOne(@Param('id') id: string): Promise<EnrollmentResponseDto> {
     return this.enrollmentsService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(1, 4) // Administrador, Secretaria
   @ApiOperation({ summary: 'Update enrollment by ID' })
-  @ApiParam({ name: 'id', description: 'Enrollment ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Enrollment ID', type: String })
   @ApiResponse({
     status: 200,
     description: 'Enrollment updated successfully',
     type: EnrollmentResponseDto,
   })
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateEnrollmentDto: UpdateEnrollmentDto,
   ): Promise<EnrollmentResponseDto> {
     return this.enrollmentsService.update(id, updateEnrollmentDto);
@@ -138,9 +136,9 @@ export class EnrollmentsController {
   @Roles(1) // Only Administrador
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete enrollment by ID' })
-  @ApiParam({ name: 'id', description: 'Enrollment ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Enrollment ID', type: String })
   @ApiResponse({ status: 204, description: 'Enrollment deleted successfully' })
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.enrollmentsService.remove(id);
   }
 }

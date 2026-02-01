@@ -12,14 +12,14 @@ import { PlansTypeOrmEntity } from './plans.typeorm-entity';
 
 @Entity('precios_sede_plan')
 export class PriceSedePlanTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ name: 'sede_id', type: 'int' })
-  campusId: number;
+  @Column({ name: 'sede_id', type: 'uuid' })
+  campusId: string;
 
-  @Column({ name: 'plan_id', type: 'int' })
-  planId: number;
+  @Column({ name: 'plan_id', type: 'uuid' })
+  planId: string;
 
   @Column({
     name: 'precio_mensualidad',

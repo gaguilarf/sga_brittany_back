@@ -1,24 +1,27 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { PriceSedePlanTypeOrmEntity } from './price-sede-plan.typeorm-entity';
 import { EnrollmentsTypeOrmEntity } from '../../../../enrollments/infrastructure/persistence/typeorm/enrollments.typeorm-entity';
+import { LevelsTypeOrmEntity } from '../../../../levels/infrastructure/persistence/typeorm/levels.typeorm-entity';
 
 @Entity('planes')
 export class PlansTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string;
 
   @Column({ type: 'varchar', length: 255 })
   name: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   service: string;
+
+  @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
+  precio: number | null;
 
   @Column({ type: 'text', nullable: true })
   description: string;
@@ -39,6 +42,9 @@ export class PlansTypeOrmEntity {
   @OneToMany('EnrollmentsTypeOrmEntity', 'plan')
   enrollments: any[];
 
-  @OneToMany(() => PriceSedePlanTypeOrmEntity, (price) => price.plan)
-  prices: PriceSedePlanTypeOrmEntity[];
+  @OneToMany(() => LevelsTypeOrmEntity, (level) => level.plan)
+  levels: LevelsTypeOrmEntity[];
+
+  @OneToMany('PriceSedePlanTypeOrmEntity', 'plan')
+  prices: any[];
 }

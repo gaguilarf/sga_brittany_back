@@ -50,7 +50,7 @@ export class AttendanceService {
     }
   }
 
-  async findOne(id: number): Promise<AttendanceResponseDto> {
+  async findOne(id: string): Promise<AttendanceResponseDto> {
     try {
       this.logger.log(`Fetching attendance record with ID: ${id}`);
       const attendance = await this.attendanceRepository.findOne({
@@ -74,7 +74,7 @@ export class AttendanceService {
   }
 
   async update(
-    id: number,
+    id: string,
     updateAttendanceDto: UpdateAttendanceDto,
   ): Promise<AttendanceResponseDto> {
     try {
@@ -102,7 +102,7 @@ export class AttendanceService {
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     try {
       this.logger.log(`Removing attendance record with ID: ${id}`);
       const attendance = await this.attendanceRepository.findOne({

@@ -92,7 +92,7 @@ export class PlansService {
     }
   }
 
-  async findOne(id: number): Promise<PlanResponseDto> {
+  async findOne(id: string): Promise<PlanResponseDto> {
     try {
       this.logger.log(`Fetching plan with ID: ${id}`);
       const plan = await this.plansRepository.findOne({
@@ -117,7 +117,7 @@ export class PlansService {
   }
 
   async update(
-    id: number,
+    id: string,
     updatePlanDto: UpdatePlanDto,
   ): Promise<PlanResponseDto> {
     try {
@@ -164,7 +164,7 @@ export class PlansService {
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     try {
       this.logger.log(`Removing plan with ID: ${id}`);
 

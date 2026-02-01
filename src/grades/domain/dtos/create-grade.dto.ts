@@ -10,19 +10,19 @@ import {
 
 export class CreateGradeDto {
   @ApiProperty({ description: 'Student ID', example: 1 })
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  studentId: number;
+  studentId: string;
 
   @ApiProperty({ description: 'Group ID', example: 1 })
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  groupId: number;
+  groupId: string;
 
   @ApiProperty({ description: 'Cycle ID', example: 1 })
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  cycleId: number;
+  cycleId: string;
 
   @ApiProperty({ description: 'Month (mes)', example: 1, required: false })
   @IsInt()
@@ -40,9 +40,9 @@ export class CreateGradeDto {
   notaFinal?: number;
 
   @ApiProperty({ description: 'Teacher ID', example: 1 })
-  @IsInt()
+  @IsString()
   @IsNotEmpty()
-  teacherId: number;
+  teacherId: string;
 
   @ApiProperty({
     description: 'Observations',

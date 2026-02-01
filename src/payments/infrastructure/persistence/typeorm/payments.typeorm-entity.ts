@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
@@ -11,11 +11,11 @@ import { DebtTypeOrmEntity } from '../../../../debts/infrastructure/persistence/
 
 @Entity('pagos')
 export class PaymentsTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string;
 
-  @Column({ name: 'matricula_id', type: 'int' })
-  enrollmentId: number;
+  @Column({ name: 'matricula_id', type: 'uuid' })
+  enrollmentId: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
   tipo: string;
@@ -37,17 +37,17 @@ export class PaymentsTypeOrmEntity {
   @Column({ name: 'fecha_pago', type: 'timestamp', nullable: true })
   fechaPago: Date;
 
-  @Column({ name: 'sede_id', type: 'int', nullable: true })
-  campusId: number;
+  @Column({ name: 'sede_id', type: 'uuid', nullable: true })
+  campusId: string;
 
-  @Column({ name: 'ciclo_asociado', type: 'int', nullable: true })
-  associatedCycleId: number;
+  @Column({ name: 'ciclo_asociado', type: 'uuid', nullable: true })
+  associatedCycleId: string;
 
-  @Column({ name: 'grupo_asociado', type: 'int', nullable: true })
-  associatedGroupId: number;
+  @Column({ name: 'grupo_asociado', type: 'uuid', nullable: true })
+  associatedGroupId: string;
 
-  @Column({ name: 'deuda_id', type: 'int', nullable: true })
-  debtId: number;
+  @Column({ name: 'deuda_id', type: 'uuid', nullable: true })
+  debtId: string;
 
   @Column({ name: 'es_adelantado', type: 'boolean', default: false })
   esAdelantado: boolean;

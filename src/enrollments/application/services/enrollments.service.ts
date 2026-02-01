@@ -69,7 +69,7 @@ export class EnrollmentsService {
       const now = new Date();
       const mesAplicado = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-      let debtToPayId: number | null = null;
+      let debtToPayId: string | null = null;
 
       if (createEnrollmentDto.enrollmentType === 'PLAN') {
         const prices = await this.pricesService.getPrice(
@@ -187,7 +187,7 @@ export class EnrollmentsService {
     }
   }
 
-  async findOne(id: number): Promise<EnrollmentResponseDto> {
+  async findOne(id: string): Promise<EnrollmentResponseDto> {
     try {
       this.logger.log(`Fetching enrollment with ID: ${id}`);
       const enrollment = await this.enrollmentsRepository.findOne({
@@ -209,7 +209,7 @@ export class EnrollmentsService {
   }
 
   async update(
-    id: number,
+    id: string,
     updateEnrollmentDto: UpdateEnrollmentDto,
   ): Promise<EnrollmentResponseDto> {
     try {
@@ -263,7 +263,7 @@ export class EnrollmentsService {
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     try {
       this.logger.log(
         `Removing enrollment with ID: ${id} and all its dependencies`,

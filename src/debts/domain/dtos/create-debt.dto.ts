@@ -11,8 +11,9 @@ import {
 export class CreateDebtDto {
   @ApiProperty({ description: 'ID de la matrícula asociada' })
   @IsNotEmpty()
-  @IsNumber()
-  enrollmentId: number;
+  @IsNotEmpty()
+  @IsString()
+  enrollmentId: string;
 
   @ApiProperty({
     description: 'Tipo de deuda',
@@ -38,8 +39,9 @@ export class CreateDebtDto {
 
   @ApiProperty({ description: 'ID del producto si aplica', required: false })
   @IsOptional()
-  @IsNumber()
-  productId?: number;
+  @IsOptional()
+  @IsString()
+  productId?: string;
 
   @ApiProperty({ description: 'Concepto de la deuda' })
   @IsNotEmpty()
@@ -68,16 +70,19 @@ export class CreateDebtDto {
 
   @ApiProperty({ description: 'ID del ciclo asociado', required: false })
   @IsOptional()
-  @IsNumber()
-  cicloAsociadoId?: number;
+  @IsOptional()
+  @IsString()
+  cicloAsociadoId?: string;
 
   @ApiProperty({ description: 'ID del grupo asociado', required: false })
   @IsOptional()
-  @IsNumber()
-  grupoAsociadoId?: number;
+  @IsOptional()
+  @IsString()
+  grupoAsociadoId?: string;
 
   @ApiProperty({ description: 'ID del nivel asociado', required: false })
   @IsOptional()
-  @IsNumber()
-  nivelAsociadoId?: number;
+  @IsOptional()
+  @IsString()
+  nivelAsociadoId?: string;
 }

@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
@@ -15,11 +15,11 @@ import { StudentProgressTypeOrmEntity } from '../../../../students/infrastructur
 
 @Entity('ciclos')
 export class CyclesTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string;
 
-  @Column({ name: 'nivel_id', type: 'int' })
-  levelId: number;
+  @Column({ name: 'nivel_id', type: 'uuid' })
+  levelId: string;
 
   @Column({ name: 'nombre_ciclo', type: 'varchar', length: 100 })
   nombreCiclo: string;

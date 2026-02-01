@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
@@ -8,18 +8,18 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { CoursesTypeOrmEntity } from './courses.typeorm-entity';
+import { PlansTypeOrmEntity } from '../../../../plans/infrastructure/persistence/typeorm/plans.typeorm-entity';
 import { CyclesTypeOrmEntity } from './cycles.typeorm-entity';
 import { EnrollmentsTypeOrmEntity } from '../../../../enrollments/infrastructure/persistence/typeorm/enrollments.typeorm-entity';
 import { StudentProgressTypeOrmEntity } from '../../../../students/infrastructure/persistence/typeorm/student-progress.typeorm-entity';
 
 @Entity('niveles')
 export class LevelsTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string;
 
-  @Column({ name: 'curso_id', type: 'int' })
-  courseId: number;
+  @Column({ name: 'plan_id', type: 'uuid' })
+  planId: string;
 
   @Column({ name: 'nombre_nivel', type: 'varchar', length: 100 })
   nombreNivel: string;
@@ -40,9 +40,9 @@ export class LevelsTypeOrmEntity {
   active: boolean;
 
   // Relations
-  @ManyToOne(() => CoursesTypeOrmEntity, (course) => course.levels)
-  @JoinColumn({ name: 'curso_id' })
-  course: CoursesTypeOrmEntity;
+  @ManyToOne(() => PlansTypeOrmEntity, (plan) => plan.levels)
+  @JoinColumn({ name: 'plan_id' })
+  plan: PlansTypeOrmEntity;
 
   @OneToMany(() => CyclesTypeOrmEntity, (cycle) => cycle.level)
   cycles: CyclesTypeOrmEntity[];

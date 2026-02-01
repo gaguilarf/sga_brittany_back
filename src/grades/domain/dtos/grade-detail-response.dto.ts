@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GradeDetailResponseDto {
-  @ApiProperty({ example: 1 })
-  id: number;
+  @ApiProperty({ example: 'uuid' })
+  id: string;
 
-  @ApiProperty({ example: 1 })
-  gradeId: number;
+  @ApiProperty({ example: 'uuid' })
+  gradeId: string;
 
   @ApiProperty({ example: 18, required: false })
   homework?: number;

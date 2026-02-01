@@ -1,6 +1,6 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
+  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
@@ -17,11 +17,11 @@ import { PaymentsTypeOrmEntity } from '../../../../payments/infrastructure/persi
 
 @Entity('deudas')
 export class DebtTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn('uuid')
+  id: string;
 
-  @Column({ name: 'matricula_id', type: 'int' })
-  enrollmentId: number;
+  @Column({ name: 'matricula_id', type: 'uuid' })
+  enrollmentId: string;
 
   @Column({
     name: 'tipo_deuda',
@@ -37,8 +37,8 @@ export class DebtTypeOrmEntity {
   })
   tipoDeuda: string;
 
-  @Column({ name: 'producto_id', type: 'int', nullable: true })
-  productId: number;
+  @Column({ name: 'producto_id', type: 'uuid', nullable: true })
+  productId: string;
 
   @Column({ type: 'varchar', length: 255 })
   concepto: string;
@@ -58,14 +58,14 @@ export class DebtTypeOrmEntity {
   @Column({ name: 'mes_aplicado', type: 'varchar', length: 7, nullable: true })
   mesAplicado: string;
 
-  @Column({ name: 'ciclo_asociado_id', type: 'int', nullable: true })
-  cicloAsociadoId: number;
+  @Column({ name: 'ciclo_asociado_id', type: 'uuid', nullable: true })
+  cicloAsociadoId: string;
 
-  @Column({ name: 'grupo_asociado_id', type: 'int', nullable: true })
-  grupoAsociadoId: number;
+  @Column({ name: 'grupo_asociado_id', type: 'uuid', nullable: true })
+  grupoAsociadoId: string;
 
-  @Column({ name: 'nivel_asociado_id', type: 'int', nullable: true })
-  nivelAsociadoId: number;
+  @Column({ name: 'nivel_asociado_id', type: 'uuid', nullable: true })
+  nivelAsociadoId: string;
 
   @Column({
     type: 'enum',

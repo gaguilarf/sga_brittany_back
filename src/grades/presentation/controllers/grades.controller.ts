@@ -57,20 +57,18 @@ export class GradesController {
 
   @Get(':id')
   @Roles(1, 2, 3, 4)
-  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'id', type: String })
   @ApiResponse({ status: 200, type: GradeResponseDto })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<GradeResponseDto> {
+  async findOne(@Param('id') id: string): Promise<GradeResponseDto> {
     return this.gradesService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(1, 2, 4)
-  @ApiParam({ name: 'id', type: Number })
+  @ApiParam({ name: 'id', type: String })
   @ApiResponse({ status: 200, type: GradeResponseDto })
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateGradeDto: UpdateGradeDto,
   ): Promise<GradeResponseDto> {
     return this.gradesService.update(id, updateGradeDto);
@@ -79,8 +77,8 @@ export class GradesController {
   @Delete(':id')
   @Roles(1)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @ApiParam({ name: 'id', type: Number })
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  @ApiParam({ name: 'id', type: String })
+  async remove(@Param('id') id: string): Promise<void> {
     return this.gradesService.remove(id);
   }
 

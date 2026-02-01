@@ -83,7 +83,7 @@ export class MonthlyDebtsService {
   }
 
   private async checkIfMonthProcessed(
-    enrollmentId: number,
+    enrollmentId: string,
     yearMonth: string,
   ): Promise<boolean> {
     // 1. Verificar en deudas

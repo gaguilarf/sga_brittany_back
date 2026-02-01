@@ -10,11 +10,11 @@ import {
 
 @Entity('notas_detalle')
 export class GradeDetailsTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ name: 'nota_id', type: 'int' })
-  gradeId: number;
+  @Column({ name: 'nota_id', type: 'uuid' })
+  gradeId: string;
 
   @Column({ type: 'int', nullable: true })
   homework: number;

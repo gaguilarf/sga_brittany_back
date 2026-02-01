@@ -84,7 +84,7 @@ export class StudentsController {
   @Get(':id')
   @Roles(1, 2, 3, 4) // All roles
   @ApiOperation({ summary: 'Get student by ID' })
-  @ApiParam({ name: 'id', description: 'Student ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Student ID', type: String })
   @ApiResponse({
     status: 200,
     description: 'Student found',
@@ -92,16 +92,14 @@ export class StudentsController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Student not found' })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<StudentResponseDto> {
+  async findOne(@Param('id') id: string): Promise<StudentResponseDto> {
     return this.studentsService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(1, 4) // Administrador, Secretaria
   @ApiOperation({ summary: 'Update student by ID' })
-  @ApiParam({ name: 'id', description: 'Student ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Student ID', type: String })
   @ApiResponse({
     status: 200,
     description: 'Student updated successfully',
@@ -115,7 +113,7 @@ export class StudentsController {
   @ApiResponse({ status: 404, description: 'Student not found' })
   @ApiResponse({ status: 409, description: 'Conflict - DNI already exists' })
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updateStudentDto: UpdateStudentDto,
   ): Promise<StudentResponseDto> {
     return this.studentsService.update(id, updateStudentDto);
@@ -137,7 +135,7 @@ export class StudentsController {
   @Roles(1) // Only Administrador
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete student by ID' })
-  @ApiParam({ name: 'id', description: 'Student ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Student ID', type: String })
   @ApiResponse({ status: 204, description: 'Student deleted successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({
@@ -145,7 +143,7 @@ export class StudentsController {
     description: 'Forbidden - Only administrators can delete',
   })
   @ApiResponse({ status: 404, description: 'Student not found' })
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.studentsService.remove(id);
   }
 }

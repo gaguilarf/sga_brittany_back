@@ -16,7 +16,7 @@ export class PricesService {
     });
   }
 
-  async findByCampus(campusId: number): Promise<PriceSedePlanTypeOrmEntity[]> {
+  async findByCampus(campusId: string): Promise<PriceSedePlanTypeOrmEntity[]> {
     return await this.priceRepository.find({
       where: { campusId, active: true },
       relations: ['plan'],
@@ -31,7 +31,7 @@ export class PricesService {
   }
 
   async update(
-    id: number,
+    id: string,
     data: Partial<PriceSedePlanTypeOrmEntity>,
   ): Promise<PriceSedePlanTypeOrmEntity> {
     await this.priceRepository.update(id, data);
@@ -41,8 +41,8 @@ export class PricesService {
   }
 
   async getPrice(
-    campusId: number,
-    planId: number,
+    campusId: string,
+    planId: string,
   ): Promise<PriceSedePlanTypeOrmEntity> {
     const price = await this.priceRepository.findOne({
       where: {
@@ -64,7 +64,7 @@ export class PricesService {
     return price;
   }
 
-  private getDefaultPrice(planId: number, campusId: number): any {
+  private getDefaultPrice(planId: string, campusId: string): any {
     // Lógica por defecto solicitada:
     // 13. Plan Standard – S/. 280
     // 14. Plan Premium – S/. 329
@@ -74,10 +74,10 @@ export class PricesService {
 
     let precioMensualidad = 280.0; // Default Standard
 
-    if (planId === 13) precioMensualidad = 280.0;
-    else if (planId === 14) precioMensualidad = 329.0;
-    else if (planId === 15) precioMensualidad = 299.0;
-    else if (planId === 16) precioMensualidad = 245.0;
+    if (planId === '13') precioMensualidad = 280.0;
+    else if (planId === '14') precioMensualidad = 329.0;
+    else if (planId === '15') precioMensualidad = 299.0;
+    else if (planId === '16') precioMensualidad = 245.0;
 
     return {
       precioMensualidad,

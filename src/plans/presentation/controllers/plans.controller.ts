@@ -84,7 +84,7 @@ export class PlansController {
   @Get(':id')
   @Roles(1, 2, 3, 4) // All roles can view
   @ApiOperation({ summary: 'Get plan by ID' })
-  @ApiParam({ name: 'id', description: 'Plan ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Plan ID', type: String })
   @ApiResponse({
     status: 200,
     description: 'Plan found',
@@ -92,16 +92,14 @@ export class PlansController {
   })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Plan not found' })
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<PlanResponseDto> {
+  async findOne(@Param('id') id: string): Promise<PlanResponseDto> {
     return this.plansService.findOne(id);
   }
 
   @Patch(':id')
   @Roles(1) // Only Administrador
   @ApiOperation({ summary: 'Update plan by ID' })
-  @ApiParam({ name: 'id', description: 'Plan ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Plan ID', type: String })
   @ApiResponse({
     status: 200,
     description: 'Plan updated successfully',
@@ -118,7 +116,7 @@ export class PlansController {
     description: 'Conflict - Plan name already exists',
   })
   async update(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id') id: string,
     @Body() updatePlanDto: UpdatePlanDto,
   ): Promise<PlanResponseDto> {
     return this.plansService.update(id, updatePlanDto);
@@ -128,7 +126,7 @@ export class PlansController {
   @Roles(1) // Only Administrador
   @HttpCode(HttpStatus.NO_CONTENT)
   @ApiOperation({ summary: 'Delete plan by ID' })
-  @ApiParam({ name: 'id', description: 'Plan ID', type: Number })
+  @ApiParam({ name: 'id', description: 'Plan ID', type: String })
   @ApiResponse({ status: 204, description: 'Plan deleted successfully' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({
@@ -136,7 +134,7 @@ export class PlansController {
     description: 'Forbidden - Only administrators can delete',
   })
   @ApiResponse({ status: 404, description: 'Plan not found' })
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async remove(@Param('id') id: string): Promise<void> {
     return this.plansService.remove(id);
   }
 
@@ -152,7 +150,7 @@ export class PlansController {
   @Get('prices/campus/:campusId')
   @Roles(1, 4)
   @ApiOperation({ summary: 'Get prices for a specific campus' })
-  async findPricesByCampus(@Param('campusId', ParseIntPipe) campusId: number) {
+  async findPricesByCampus(@Param('campusId') campusId: string) {
     return this.pricesService.findByCampus(campusId);
   }
 
@@ -166,7 +164,7 @@ export class PlansController {
   @Patch('prices/:id')
   @Roles(1)
   @ApiOperation({ summary: 'Update a configured price' })
-  async updatePrice(@Param('id', ParseIntPipe) id: number, @Body() data: any) {
+  async updatePrice(@Param('id') id: string, @Body() data: any) {
     return this.pricesService.update(id, data);
   }
 }

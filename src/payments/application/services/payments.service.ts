@@ -45,7 +45,7 @@ export class PaymentsService {
       const payment = this.paymentsRepository.create(paymentData);
 
       // Si el pago está vinculado a una deuda, actualizar el estado de la deuda
-      let debtId = createPaymentDto.debtId;
+      let debtId: string | undefined = createPaymentDto.debtId;
 
       // Si no viene debtId y no es pago adelantado, intentamos buscar una deuda pendiente
       if (
@@ -158,7 +158,7 @@ export class PaymentsService {
     }
   }
 
-  async getPrepaymentDetails(paymentId: number) {
+  async getPrepaymentDetails(paymentId: string) {
     try {
       this.logger.log(
         `Fetching prepayment details for payment ID: ${paymentId}`,
@@ -181,7 +181,7 @@ export class PaymentsService {
     }
   }
 
-  async findOne(id: number): Promise<PaymentResponseDto> {
+  async findOne(id: string): Promise<PaymentResponseDto> {
     try {
       this.logger.log(`Fetching payment with ID: ${id}`);
       const payment = await this.paymentsRepository.findOne({
@@ -203,7 +203,7 @@ export class PaymentsService {
   }
 
   async update(
-    id: number,
+    id: string,
     updatePaymentDto: UpdatePaymentDto,
   ): Promise<PaymentResponseDto> {
     try {
@@ -229,7 +229,7 @@ export class PaymentsService {
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: string): Promise<void> {
     try {
       this.logger.log(`Removing payment with ID: ${id}`);
       const payment = await this.paymentsRepository.findOne({

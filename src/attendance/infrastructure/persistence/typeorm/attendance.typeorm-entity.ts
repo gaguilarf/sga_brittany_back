@@ -10,17 +10,17 @@ import {
 
 @Entity('asistencia')
 export class AttendanceTypeOrmEntity {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-  @Column({ name: 'alumno_id', type: 'int' })
-  studentId: number;
+  @Column({ name: 'alumno_id', type: 'uuid' })
+  studentId: string;
 
-  @Column({ name: 'grupo_id', type: 'int' })
-  groupId: number;
+  @Column({ name: 'grupo_id', type: 'uuid' })
+  groupId: string;
 
-  @Column({ name: 'ciclo_id', type: 'int' })
-  cycleId: number;
+  @Column({ name: 'ciclo_id', type: 'uuid' })
+  cycleId: string;
 
   @Column({ type: 'date' })
   fecha: Date;
@@ -28,8 +28,8 @@ export class AttendanceTypeOrmEntity {
   @Column({ type: 'varchar', length: 50, nullable: true })
   estado: string;
 
-  @Column({ name: 'docente_id', type: 'int' })
-  teacherId: number;
+  @Column({ name: 'docente_id', type: 'uuid' })
+  teacherId: string;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

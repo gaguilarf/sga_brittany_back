@@ -1,11 +1,15 @@
 import { DataSource } from 'typeorm';
-import { PlansTypeOrmEntity } from '../src/plans/infrastructure/persistence/typeorm/plans.typeorm-entity';
-import { CoursesTypeOrmEntity } from '../src/levels/infrastructure/persistence/typeorm/courses.typeorm-entity';
-import { LevelsTypeOrmEntity } from '../src/levels/infrastructure/persistence/typeorm/levels.typeorm-entity';
-import { CyclesTypeOrmEntity } from '../src/levels/infrastructure/persistence/typeorm/cycles.typeorm-entity';
+import { v5 as uuidv5 } from 'uuid';
 import * as dotenv from 'dotenv';
 
 dotenv.config();
+
+// Deterministic UUID Namespace for SGA
+const NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+
+function getUUID(name: string): string {
+  return uuidv5(name, NAMESPACE);
+}
 
 async function seed() {
   const AppDataSource = new DataSource({
@@ -15,193 +19,185 @@ async function seed() {
     username: process.env.DB_USERNAME || 'root',
     password: process.env.DB_PASSWORD || 'password',
     database: process.env.DB_DATABASE || 'sga_db',
-    entities: [__dirname + '/../src/**/*.typeorm-entity{.ts,.js}'],
     synchronize: false,
   });
 
   try {
     await AppDataSource.initialize();
-    console.log('Data Source initialized');
+    console.log('✅ Database connection established');
 
-    const planRepo = AppDataSource.getRepository(PlansTypeOrmEntity);
-    const courseRepo = AppDataSource.getRepository(CoursesTypeOrmEntity);
-    const levelRepo = AppDataSource.getRepository(LevelsTypeOrmEntity);
-    const cycleRepo = AppDataSource.getRepository(CyclesTypeOrmEntity);
-
-    // 1. Seed Planes (Sin precios fijos aquí)
-    const plans = ['Plan Standard', 'Plan Premium', 'Plan Plus', 'Convenio'];
-    for (const pName of plans) {
-      const exists = await planRepo.findOne({ where: { name: pName } });
-      if (!exists) {
-        await planRepo.save({ name: pName, active: true });
-        console.log(`Plan ${pName} created`);
-      }
+    // Clean up academic tables to ensure a fresh deterministic seed
+    console.log('🗑️ Cleaning academic tables...');
+    try {
+      await AppDataSource.query('SET FOREIGN_KEY_CHECKS = 0');
+      await AppDataSource.query('TRUNCATE TABLE ciclos');
+      await AppDataSource.query('TRUNCATE TABLE niveles');
+      await AppDataSource.query('TRUNCATE TABLE planes');
+      await AppDataSource.query('SET FOREIGN_KEY_CHECKS = 1');
+    } catch (e) {
+      console.log(
+        '⚠️ Could not truncate tables, proceeding with INSERT strategy.',
+      );
     }
 
-    // 2. Seed Cursos
-    const cursoNames = [
-      'Curso de 1 año',
-      'Curso de 18 meses',
-      'Curso Kids',
-      'Curso Pre-Kids',
+    // 1. Seed Planes
+    console.log('\n🌱 Seeding Plans...');
+    const plansData = [
+      { name: 'Curso de 1 año', precio: 280.0, duracion: 12 },
+      { name: 'Curso de 18 meses', precio: 299.0, duracion: 18 },
+      { name: 'Kids', precio: 329.0, duracion: 18 },
+      { name: 'Pre-Kids', precio: null, duracion: 9 },
     ];
-    for (const cName of cursoNames) {
-      let curso = await courseRepo.findOne({ where: { name: cName } });
-      if (!curso) {
-        curso = await courseRepo.save({ name: cName, active: true });
-        console.log(`Curso ${cName} created`);
-      }
 
-      // 3. Seed Niveles & Ciclos
-      if (
-        cName === 'Curso de 1 año' ||
-        cName === 'Curso Kids' ||
-        cName === 'Curso Pre-Kids'
-      ) {
-        const structure = [
-          {
-            name: 'Básico',
-            duracion: 2,
-            ciclos: [
-              'Beginner 1',
-              'Beginner 2',
-              'Elementary 1',
-              'Elementary 2',
-            ],
-          },
-          {
-            name: 'Intermedio',
-            duracion: 2,
-            ciclos: [
-              'Pre Intermediate 1',
-              'Pre Intermediate 2',
-              'Intermediate 1',
-              'Intermediate 2',
-            ],
-          },
-          {
-            name: 'Avanzado',
-            duracion: 2,
-            ciclos: [
-              'Upper Intermediate 1',
-              'Upper Intermediate 2',
-              'Advanced 1',
-              'Advanced 2',
-            ],
-          },
+    for (const p of plansData) {
+      const planId = getUUID(
+        `PLAN_${p.name.toUpperCase().replace(/\s/g, '_')}`,
+      );
+      await AppDataSource.query(
+        `INSERT INTO planes (id, name, precio, service, duracion_meses, active, created_at, updated_at) 
+         VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+        [planId, p.name, p.precio, 'Matrícula', p.duracion, true],
+      );
+      console.log(`📦 Plan: ${p.name} (${planId})`);
+
+      // 2. Seed Levels and Cycles based on Program rules
+      if (p.name === 'Curso de 1 año' || p.name === 'Curso de 18 meses') {
+        const levels = [
+          { name: 'Básico', orden: 1 },
+          { name: 'Intermedio', orden: 2 },
+          { name: 'Avanzado', orden: 3 },
         ];
 
-        for (let i = 0; i < structure.length; i++) {
-          const s = structure[i];
-          let level = await levelRepo.findOne({
-            where: { nombreNivel: s.name, courseId: curso.id },
-          });
-          if (!level) {
-            level = await levelRepo.save({
-              nombreNivel: s.name,
-              courseId: curso.id,
-              orden: i + 1,
-              duracionMeses: s.duracion,
-              active: true,
-            });
-          }
+        const cyclesByLevel = p.name === 'Curso de 1 año' ? 4 : 6;
+        const duracionCiclo = p.name === 'Curso de 1 año' ? 2 : 3;
 
-          for (let j = 0; j < s.ciclos.length; j++) {
-            const cycleName = s.ciclos[j];
-            const cycleExists = await cycleRepo.findOne({
-              where: { nombreCiclo: cycleName, levelId: level.id },
-            });
-            if (!cycleExists) {
-              await cycleRepo.save({
-                nombreCiclo: cycleName,
-                levelId: level.id,
-                orden: j + 1,
-                active: true,
-              });
-            }
+        for (const l of levels) {
+          const levelId = getUUID(
+            `LEVEL_${p.name.toUpperCase()}_${l.name.toUpperCase()}`,
+          );
+          const totalDuracionNivel = cyclesByLevel * duracionCiclo;
+
+          await AppDataSource.query(
+            `INSERT INTO niveles (id, plan_id, nombre_nivel, orden, duracion_meses, active, created_at, updated_at) 
+             VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+            [levelId, planId, l.name, l.orden, totalDuracionNivel, true],
+          );
+          console.log(`  📂 Level: ${l.name}`);
+
+          const cycleNames = getCycleNamesForLevel(l.name, cyclesByLevel);
+          for (let i = 0; i < cycleNames.length; i++) {
+            const cycleName = cycleNames[i];
+            const cycleId = getUUID(
+              `CYCLE_${p.name.toUpperCase()}_${l.name.toUpperCase()}_${cycleName.toUpperCase().replace(/\s/g, '_')}`,
+            );
+
+            await AppDataSource.query(
+              `INSERT INTO ciclos (id, nivel_id, nombre_ciclo, orden, duracion_meses, libro, active, created_at, updated_at) 
+               VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+              [
+                cycleId,
+                levelId,
+                cycleName,
+                i + 1,
+                duracionCiclo,
+                cycleName,
+                true,
+              ],
+            );
           }
         }
-      } else if (cName === 'Curso de 18 meses') {
-        const structure = [
-          {
-            name: 'Básico',
-            duracion: 3,
-            ciclos: [
-              'Beginner 1',
-              'Beginner 2',
-              'Beginner 3',
-              'Elementary 1',
-              'Elementary 2',
-              'Elementary 3',
-            ],
-          },
-          {
-            name: 'Intermedio',
-            duracion: 3,
-            ciclos: [
-              'Pre Intermediate 1',
-              'Pre Intermediate 2',
-              'Pre Intermediate 3',
-              'Intermediate 1',
-              'Intermediate 2',
-              'Intermediate 3',
-            ],
-          },
-          {
-            name: 'Avanzado',
-            duracion: 3,
-            ciclos: [
-              'Upper Intermediate 1',
-              'Upper Intermediate 2',
-              'Upper Intermediate 3',
-              'Advanced 1',
-              'Advanced 2',
-              'Advanced 3',
-            ],
-          },
-        ];
+      } else if (p.name === 'Kids') {
+        const levelName = 'KIDS';
+        const levelId = getUUID(`LEVEL_${p.name.toUpperCase()}_${levelName}`);
 
-        for (let i = 0; i < structure.length; i++) {
-          const s = structure[i];
-          let level = await levelRepo.findOne({
-            where: { nombreNivel: s.name, courseId: curso.id },
-          });
-          if (!level) {
-            level = await levelRepo.save({
-              nombreNivel: s.name,
-              courseId: curso.id,
-              orden: i + 1,
-              duracionMeses: s.duracion,
-              active: true,
-            });
-          }
+        await AppDataSource.query(
+          `INSERT INTO niveles (id, plan_id, nombre_nivel, orden, duracion_meses, active, created_at, updated_at) 
+           VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+          [levelId, planId, levelName, 1, 18, true],
+        );
+        console.log(`  📂 Level: ${levelName}`);
 
-          for (let j = 0; j < s.ciclos.length; j++) {
-            const cycleName = s.ciclos[j];
-            const cycleExists = await cycleRepo.findOne({
-              where: { nombreCiclo: cycleName, levelId: level.id },
-            });
-            if (!cycleExists) {
-              await cycleRepo.save({
-                nombreCiclo: cycleName,
-                levelId: level.id,
-                orden: j + 1,
-                active: true,
-              });
-            }
-          }
+        for (let i = 1; i <= 18; i++) {
+          const cycleName = `KIDS ${i}`;
+          const cycleId = getUUID(
+            `CYCLE_${p.name.toUpperCase()}_${cycleName.replace(/\s/g, '_')}`,
+          );
+
+          await AppDataSource.query(
+            `INSERT INTO ciclos (id, nivel_id, nombre_ciclo, orden, duracion_meses, libro, active, created_at, updated_at) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+            [cycleId, levelId, cycleName, i, 1, cycleName, true],
+          );
+        }
+      } else if (p.name === 'Pre-Kids') {
+        const levelName = 'PRE-KIDS';
+        const levelId = getUUID(`LEVEL_${p.name.toUpperCase()}_${levelName}`);
+
+        await AppDataSource.query(
+          `INSERT INTO niveles (id, plan_id, nombre_nivel, orden, duracion_meses, active, created_at, updated_at) 
+           VALUES (?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+          [levelId, planId, levelName, 1, 9, true],
+        );
+        console.log(`  📂 Level: ${levelName}`);
+
+        for (let i = 1; i <= 9; i++) {
+          const cycleName = `PREKIDS ${i}`;
+          const cycleId = getUUID(
+            `CYCLE_${p.name.toUpperCase()}_${cycleName.replace(/\s/g, '_')}`,
+          );
+
+          await AppDataSource.query(
+            `INSERT INTO ciclos (id, nivel_id, nombre_ciclo, orden, duracion_meses, libro, active, created_at, updated_at) 
+             VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+            [cycleId, levelId, cycleName, i, 1, cycleName, true],
+          );
         }
       }
     }
 
-    console.log('Seed completed successfully');
+    console.log('\n✨ Academic seed completed successfully!');
+    await AppDataSource.destroy();
   } catch (error) {
-    console.error('Error during seed:', error);
-  } finally {
-    if (AppDataSource.isInitialized) {
-      await AppDataSource.destroy();
-    }
+    console.error('❌ Error seeding database:', error);
+    process.exit(1);
   }
+}
+
+function getCycleNamesForLevel(levelName: string, count: number): string[] {
+  if (levelName === 'Básico') {
+    const base = [
+      'Beginner 1',
+      'Beginner 2',
+      'Beginner 3',
+      'Elementary 1',
+      'Elementary 2',
+      'Elementary 3',
+    ];
+    return base.slice(0, count);
+  }
+  if (levelName === 'Intermedio') {
+    const base = [
+      'Pre Intermediate 1',
+      'Pre Intermediate 2',
+      'Pre Intermediate 3',
+      'Intermediate 1',
+      'Intermediate 2',
+      'Intermediate 3',
+    ];
+    return base.slice(0, count);
+  }
+  if (levelName === 'Avanzado') {
+    const base = [
+      'Upper Intermediate 1',
+      'Upper Intermediate 2',
+      'Upper Intermediate 3',
+      'Advanced 1',
+      'Advanced 2',
+      'Advanced 3',
+    ];
+    return base.slice(0, count);
+  }
+  return [];
 }
 
 seed();
