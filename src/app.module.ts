@@ -18,6 +18,7 @@ import { LevelsModule } from './levels/levels.module';
 import { GroupsModule } from './groups/groups.module';
 import { ProductsModule } from './products/products.module';
 import { DebtsModule } from './debts/debts.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -41,6 +42,7 @@ import { DebtsModule } from './debts/debts.module';
     GroupsModule,
     ProductsModule,
     DebtsModule,
+    DashboardModule,
   ],
   controllers: [AppController],
   providers: [AppService],
